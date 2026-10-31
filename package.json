@@ -1,0 +1,49 @@
+{
+  "name": "avronext",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "description": "AvroNext: a modern Jira/Confluence-style workspace on top of Nextcloud Deck and Collectives.",
+  "scripts": {
+    "dev": "next dev --port 3100",
+    "build": "next build",
+    "postbuild": "node scripts/copy-standalone-assets.mjs",
+    "start": "node .next/standalone/server.js",
+    "typecheck": "tsc --noEmit",
+    "check:markdown": "tsx scripts/markdown-roundtrip.ts"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "dependencies": {
+    "@tiptap/core": "^3.32.0",
+    "@tiptap/extension-image": "^3.32.0",
+    "@tiptap/extension-list": "^3.32.0",
+    "@tiptap/extension-table": "^3.32.0",
+    "@tiptap/extensions": "^3.32.0",
+    "@tiptap/markdown": "^3.32.0",
+    "@tiptap/pm": "^3.32.0",
+    "@tiptap/react": "^3.32.0",
+    "@tiptap/starter-kit": "^3.32.0",
+    "@tiptap/suggestion": "^3.32.0",
+    "docx-preview": "^0.3.7",
+    "dompurify": "^3.4.17",
+    "fast-xml-parser": "^5.11.2",
+    "jszip": "^3.10.1",
+    "marked": "^16.4.1",
+    "next": "15.5.28",
+    "react": "19.1.10",
+    "react-dom": "19.1.10",
+    "sanitize-html": "^2.17.0",
+    "server-only": "^0.0.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/sanitize-html": "^2.16.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.8.0"
+  }
+}
