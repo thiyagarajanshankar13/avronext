@@ -459,11 +459,28 @@ select {
   vertical-align: middle;
 }
 .avatar-initials {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  overflow: hidden;
+  user-select: none;
+}
+.avatar-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0;
+}
+.avatar-img.is-loaded {
+  opacity: 1;
 }
 .avatar-more {
   background: var(--bg-neutral-hover);
@@ -1136,7 +1153,7 @@ select {
 .avatar-toggle {
   border: 0;
   padding: 0;
-  margin-left: -6px;
+  margin-left: -3px;
   background: none;
   border-radius: 50%;
   cursor: pointer;
@@ -1148,8 +1165,38 @@ select {
   z-index: 1;
 }
 .avatar-toggle.is-on {
-  box-shadow: 0 0 0 2px var(--brand);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--brand);
   z-index: 2;
+}
+.avatar-toggle .avatar {
+  display: flex;
+}
+.avatar-more-menu {
+  margin-left: -3px;
+}
+.avatar-more-menu .menu-trigger {
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 50%;
+}
+.avatar-more-menu .avatar-more {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px var(--bg);
+}
+.avatar-more-menu .avatar-more:hover {
+  background: var(--bg-neutral-hover);
+  color: var(--text);
+}
+.avatar-more-menu .menu-trigger[aria-expanded='true'] .avatar-more {
+  background: var(--bg-selected);
+  color: var(--brand);
+}
+.avatar-more-menu .menu-panel {
+  min-width: 240px;
 }
 .table-wrap {
   overflow-x: auto;

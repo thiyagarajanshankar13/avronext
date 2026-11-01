@@ -185,7 +185,7 @@ export function IssueModal({
                 onCount={(d) => api.adjustAttachments(card.id, d)}
               />
             </section>
-            <Comments cardId={card.id} me={me} canComment={board.permissions.PERMISSION_READ} />
+            <Comments cardId={card.id} me={me} meName={board.users.find((u) => u.uid === me)?.displayname} canComment={board.permissions.PERMISSION_READ} />
           </div>
 
           <aside className="issue-side">
@@ -327,7 +327,7 @@ function Description({ value, disabled, onSave }: { value: string; disabled: boo
   )
 }
 
-function Comments({ cardId, me, canComment }: { cardId: number; me: string; canComment: boolean }) {
+function Comments({ cardId, me, meName, canComment }: { cardId: number; me: string; meName?: string; canComment: boolean }) {
   const [comments, setComments] = useState<DeckComment[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
@@ -362,7 +362,7 @@ function Comments({ cardId, me, canComment }: { cardId: number; me: string; canC
       <h3>Activity</h3>
       {canComment && (
         <div className="comment-new">
-          <Avatar uid={me} size={32} />
+          <Avatar uid={me} name={meName} size={32} />
           <div className="comment-new-body">
             <textarea
               rows={draft ? 3 : 1}
