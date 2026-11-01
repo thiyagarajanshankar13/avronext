@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { publicUrl } from '@/lib/redirect'
 
 const PUBLIC = ['/login', '/logout']
 
@@ -8,9 +9,7 @@ export function middleware(req: NextRequest) {
   if (PUBLIC.some((p) => pathname === p || pathname.startsWith(p + '/'))) return NextResponse.next()
   if (req.cookies.has('avronext_session')) return NextResponse.next()
   if (pathname.startsWith('/api/')) return new NextResponse('Unauthorized', { status: 401 })
-  const url = new URL('/login', req.url)
-  if (pathname !== '/') url.searchParams.set('next', pathname + search)
-  return NextResponse.redirect(url)
+  return NextResponse.redirect(publicUrl(req, pathname === '/' ? '/login' : `/login?${new URLSearchParams({ next: pathname + search })}`))
 }
 
 export const config = {
