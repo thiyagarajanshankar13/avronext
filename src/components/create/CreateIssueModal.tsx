@@ -1,8 +1,9 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { createIssue, loadIssueOptions } from '@/app/(app)/projects/actions'
 import type { DeckLabel } from '@/lib/nextcloud/deck'
+import { RichEditor, type RichEditorHandle } from '../editor/RichEditor'
 import { boardFilterLabels } from '../project/boardFilterContext'
 import { LabelChips } from '../project/LabelChips'
 import { ISSUE_CREATED } from '../project/useBoard'
@@ -29,7 +30,7 @@ export function CreateIssueModal({
   const [labels, setLabels] = useState<DeckLabel[]>([])
   const [prefilled, setPrefilled] = useState(false)
   const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  const descEditor = useRef<RichEditorHandle>(null)
   const [due, setDue] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [pending, start] = useTransition()
@@ -64,7 +65,7 @@ export function CreateIssueModal({
         projectId,
         stackId,
         title,
-        description,
+        descEditor.current?.getMarkdown().trimEnd() ?? '',
         due ? new Date(due + 'T17:00:00').toISOString() : null,
         labels.map((l) => l.id),
       )
@@ -133,10 +134,13 @@ export function CreateIssueModal({
             </span>
             <input value={title} onChange={(e) => setTitle(e.target.value)} autoFocus maxLength={255} />
           </label>
-          <label className="field">
+          <div className="field">
             <span>Description</span>
-            <textarea rows={6} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Markdown supported" />
-          </label>
+            {/* Same editor as the issue panel; attachments can be added once the issue exists. */}
+            <div className="create-desc">
+              <RichEditor ref={descEditor} initialMarkdown="" variant="compact" placeholder="Add a description… Type '/' for commands" onSubmit={submit} />
+            </div>
+          </div>
           {projectLabels.length > 0 && (
             <div className="field">
               <span>Labels</span>
