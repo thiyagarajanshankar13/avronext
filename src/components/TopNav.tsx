@@ -42,6 +42,11 @@ export function TopNav({
   const location = `${pathname}?${params.toString()}`
   useEffect(() => setCreating(null), [location])
 
+  // Phones scroll the tabs sideways: keep the current one in view.
+  useEffect(() => {
+    document.querySelector('.topnav-links .is-active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [pathname])
+
   const currentProject = Number(pathname.match(/^\/projects\/(\d+)/)?.[1]) || undefined
   const currentSpace = Number(pathname.match(/^\/spaces\/(\d+)/)?.[1]) || undefined
   const currentPage = Number(pathname.match(/^\/spaces\/\d+\/pages\/(\d+)/)?.[1]) || undefined
@@ -64,6 +69,7 @@ export function TopNav({
           {tab('/projects', 'Projects', pathname.startsWith('/projects'))}
           {tab('/spaces', 'Spaces', pathname.startsWith('/spaces'))}
           {tab('/files', 'Files', pathname.startsWith('/files'))}
+          {tab('/notes', 'Notes', pathname.startsWith('/notes'))}
         </nav>
         <Menu
           className="topnav-create"
