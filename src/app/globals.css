@@ -4661,10 +4661,9 @@ img.slide-shape {
   border: 0;
   background: none;
 }
-.note-editor .note-tool-menu .menu-panel,
-.note-composer .note-tool-menu .menu-panel {
-  top: auto;
-  bottom: calc(100% + 4px);
+.menu-floating {
+  /* Above dialogs too (it's rendered at the end of <body>). */
+  z-index: 200;
 }
 .note-colors {
   display: grid;
@@ -4833,7 +4832,8 @@ img.slide-shape {
   transition: opacity 0.15s;
 }
 .note-card:hover .note-toolbar,
-.note-card:focus-within .note-toolbar {
+.note-card:focus-within .note-toolbar,
+.note-card:has(.menu-trigger[aria-expanded='true']) .note-toolbar {
   opacity: 1;
 }
 .note-pin {

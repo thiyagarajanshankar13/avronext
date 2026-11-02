@@ -50,6 +50,7 @@ function ToolButton({ icon, label, onClick, active }: { icon: IconName; label: s
 export function ColorPicker({ value, onPick }: { value: NoteColor; onPick: (c: NoteColor) => void }) {
   return (
     <Menu
+      floating
       className="note-tool-menu"
       label="Background colour"
       trigger={
@@ -101,6 +102,7 @@ export function LabelPicker({
   const exact = all.some((l) => l.toLowerCase() === needle)
   return (
     <Menu
+      floating
       className="note-tool-menu"
       label="Labels"
       trigger={

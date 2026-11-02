@@ -264,7 +264,7 @@ function Composer({ store, labels, defaultLabel, onError }: { store: NotesStore;
     )
 
   return (
-    <div className="note-composer" data-color={note?.color ?? 'default'} ref={box} onKeyDown={(e) => e.key === 'Escape' && close()}>
+    <div className="note-composer" data-color={note?.color ?? 'default'} ref={box} onKeyDown={(e) => e.key === 'Escape' && !document.querySelector('.menu-floating') && close()}>
       <NoteFields
         title={note?.title ?? ''}
         body={note?.body ?? (open === 'list' ? '- [ ] ' : '')}
@@ -316,7 +316,7 @@ function NoteEditor({
       className="modal-backdrop note-editor-backdrop"
       onMouseDown={(e) => e.target === e.currentTarget && close()}
       // Escape closes an open colour/label menu first, then the note.
-      onKeyDown={(e) => e.key === 'Escape' && !document.querySelector('.note-editor .menu-panel') && close()}
+      onKeyDown={(e) => e.key === 'Escape' && !document.querySelector('.menu-floating') && close()}
     >
       <div
         className={`note-editor${dragging ? ' is-drop' : ''}`}
