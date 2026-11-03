@@ -1,6 +1,18 @@
 # AvroNext
 
+[![Website](https://img.shields.io/badge/website-avronext-0c66e4)](https://thiyagarajanshankar13.github.io/avronext/)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
+[![Nextcloud 28+](https://img.shields.io/badge/Nextcloud-28%2B-0082c9)](https://nextcloud.com)
+
 A modern, Jira/Confluence-style front end for **Nextcloud**.
+
+**Website, screenshots and setup guide: https://thiyagarajanshankar13.github.io/avronext/**
+
+![AvroNext project board](https://raw.githubusercontent.com/thiyagarajanshankar13/avronext/gh-pages/assets/screens/board-light.jpg)
+
+| Spaces | Files | Phone |
+| --- | --- | --- |
+| ![A space page](https://raw.githubusercontent.com/thiyagarajanshankar13/avronext/gh-pages/assets/screens/page-light.jpg) | ![Files with the Word viewer](https://raw.githubusercontent.com/thiyagarajanshankar13/avronext/gh-pages/assets/screens/viewer-word-light.jpg) | ![The board on a phone](https://raw.githubusercontent.com/thiyagarajanshankar13/avronext/gh-pages/assets/screens/phone-board-light.jpg) |
 
 - **Projects** (Jira-like) on top of **Nextcloud Deck**: boards with drag-and-drop columns, a sortable list view, issue keys (`ML-42`), an issue panel with Markdown descriptions, assignees, labels, due dates, done state and comments.
 - **Spaces** (Confluence-like) on top of **Nextcloud Collectives**: a page tree, rendered pages with a table of contents and info/warning panels, a WYSIWYG editor (toolbar, `/` commands, tables, info/warning panels, task lists, links, pasted and dropped images) with a Markdown mode one click away, child pages, page icons, and trash. Issue descriptions use the same editor.
