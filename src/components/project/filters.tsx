@@ -48,8 +48,14 @@ export function useIssueFilter(board: DeckBoard, me: string, stacks: DeckStack[]
     )
   }, [board.id, board.labels, stacks])
   useEffect(() => () => publishBoardLabels(board.id, null), [board.id])
+  // How many issues each person has: the assignee filter shows the busiest first.
+  const assigneeCounts = useMemo(() => {
+    const m = new Map<string, number>()
+    for (const st of stacks) for (const c of st.cards ?? []) for (const a of c.assignedUsers) m.set(a.participant.uid, (m.get(a.participant.uid) ?? 0) + 1)
+    return m
+  }, [stacks])
   const active = Boolean(filter.text || filter.assignees.length || filter.labels.length || filter.onlyMine || filter.unassigned)
-  return { filter, setFilter, matches, active, clear: () => setFilter({ ...NO_FILTER, labels: [] }) }
+  return { filter, setFilter, matches, active, assigneeCounts, clear: () => setFilter({ ...NO_FILTER, labels: [] }) }
 }
 
 export function FilterBar({ board, state }: { board: DeckBoard; state: ReturnType<typeof useIssueFilter> }) {
@@ -61,19 +67,7 @@ export function FilterBar({ board, state }: { board: DeckBoard; state: ReturnTyp
         <Icon name="search" />
         <input value={filter.text} onChange={(e) => setFilter({ ...filter, text: e.target.value })} placeholder="Search this board" aria-label="Search this board" />
       </label>
-      <div className="avatar-filter" role="group" aria-label="Filter by assignee">
-        {board.users.slice(0, 8).map((u) => (
-          <button
-            key={u.uid}
-            className={`avatar-toggle${filter.assignees.includes(u.uid) ? ' is-on' : ''}`}
-            onClick={() => setFilter({ ...filter, assignees: toggle(filter.assignees, u.uid) })}
-            title={u.displayname}
-            aria-pressed={filter.assignees.includes(u.uid)}
-          >
-            <Avatar uid={u.uid} name={u.displayname} size={32} />
-          </button>
-        ))}
-      </div>
+      <AssigneeFilter users={board.users} counts={state.assigneeCounts} selected={filter.assignees} onToggle={(uid) => setFilter({ ...filter, assignees: toggle(filter.assignees, uid) })} />
       {board.labels.length > 0 && (
         <Menu
           label="Filter by label"
@@ -105,6 +99,67 @@ export function FilterBar({ board, state }: { board: DeckBoard; state: ReturnTyp
         <button className="btn btn-subtle" onClick={clear}>
           Clear filters
         </button>
+      )}
+    </div>
+  )
+}
+
+const SHOWN = 5
+
+/**
+ * Assignee filter: the first few people as overlapping avatars and a "+N" menu
+ * listing everyone by name.
+ */
+function AssigneeFilter({
+  users: boardUsers,
+  counts,
+  selected,
+  onToggle,
+}: {
+  users: DeckBoard['users']
+  counts: Map<string, number>
+  selected: string[]
+  onToggle: (uid: string) => void
+}) {
+  if (!boardUsers.length) return null
+  // Most issues first, then by name; people picked from the "+N" menu join the row so the selection stays visible.
+  const users = [...boardUsers].sort((a, b) => (counts.get(b.uid) ?? 0) - (counts.get(a.uid) ?? 0) || a.displayname.localeCompare(b.displayname))
+  const first = users.length <= SHOWN + 1 ? users : users.slice(0, SHOWN)
+  const shown = [...first, ...users.filter((u) => selected.includes(u.uid) && !first.includes(u))]
+  const more = users.length - shown.length
+  return (
+    <div className="avatar-filter" role="group" aria-label="Filter by assignee">
+      {shown.map((u) => (
+        <button
+          key={u.uid}
+          className={`avatar-toggle${selected.includes(u.uid) ? ' is-on' : ''}`}
+          onClick={() => onToggle(u.uid)}
+          title={u.displayname}
+          aria-label={`Filter by ${u.displayname}`}
+          aria-pressed={selected.includes(u.uid)}
+        >
+          <Avatar uid={u.uid} name={u.displayname} size={32} title={u.displayname} />
+        </button>
+      ))}
+      {more > 0 && (
+        <Menu
+          className="avatar-more-menu"
+          label={`${more} more people`}
+          trigger={<span className="avatar avatar-initials avatar-more">+{more}</span>}
+        >
+          {() => (
+            <>
+              <div className="menu-heading">Assignee</div>
+              {users.map((u) => (
+                <label key={u.uid} className="menu-item menu-check">
+                  <input type="checkbox" checked={selected.includes(u.uid)} onChange={() => onToggle(u.uid)} />
+                  <Avatar uid={u.uid} name={u.displayname} size={24} />
+                  <span>{u.displayname}</span>
+                </label>
+              ))}
+            </>
+          )}
+        </Menu>
       )}
     </div>
   )

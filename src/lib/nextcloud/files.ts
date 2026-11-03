@@ -109,7 +109,7 @@ function parseMultistatus(xml: string, userId: string): DriveItem[] {
   })
 }
 
-async function dav(s: Session, method: string, path: string, opts: { body?: string; headers?: Record<string, string>; root?: string } = {}) {
+export async function dav(s: Session, method: string, path: string, opts: { body?: string; headers?: Record<string, string>; root?: string } = {}) {
   const url = opts.root ?? davPath(s.userId, path)
   return ncRequest(s, url, {
     method,
@@ -118,7 +118,7 @@ async function dav(s: Session, method: string, path: string, opts: { body?: stri
   })
 }
 
-function davError(status: number, path: string, what: string): NextcloudError {
+export function davError(status: number, path: string, what: string): NextcloudError {
   const msg =
     status === 404
       ? 'That file or folder no longer exists.'
@@ -134,7 +134,7 @@ function davError(status: number, path: string, what: string): NextcloudError {
   return new NextcloudError(msg, status, path)
 }
 
-async function propfind(s: Session, path: string, depth: '0' | '1') {
+export async function propfind(s: Session, path: string, depth: '0' | '1') {
   const res = await dav(s, 'PROPFIND', path, { body: `<?xml version="1.0"?><d:propfind ${NS}><d:prop>${PROPS}</d:prop></d:propfind>`, headers: { Depth: depth } })
   if (res.status !== 207) throw davError(res.status, path, 'Loading')
   return parseMultistatus(await res.text(), s.userId)

@@ -10,7 +10,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
   try {
     const res = await ncRequest(session, `/index.php/avatar/${encodeURIComponent(user)}/${size}`, { headers: { Accept: 'image/*' } })
     const type = res.headers.get('content-type') ?? ''
-    if (!res.ok || !type.startsWith('image/')) return new Response('Not found', { status: 404 })
+    // Nextcloud's generated letter pictures are dropped: AvroNext draws coloured initials instead.
+    if (!res.ok || !type.startsWith('image/') || res.headers.get('x-nc-iscustomavatar') === '0')
+      // 204, not 404: the <img> still falls back, but browsers don't log an error for every person without a photo.
+      return new Response(null, { status: 204, headers: { 'Cache-Control': 'private, max-age=3600' } })
     return new Response(res.body, {
       headers: {
         'Content-Type': type,

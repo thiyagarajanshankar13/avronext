@@ -1,12 +1,15 @@
 'use client'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type MouseEvent as ReactMouseEvent } from 'react'
 import { deleteItems, moveItems, reloadView, setFavorite } from '@/app/(app)/files/actions'
 import type { FileRow, FilesData } from '@/app/(app)/files/data'
 import { fmtDate, fmtRelative } from '@/lib/format'
 import { Icon } from '../Icon'
 import { Menu } from '../Menu'
+import { Modal } from '../Modal'
+import { FAB_EVENT } from '@/lib/fab'
+import { clearShared, readShared } from '@/lib/sharedItems'
 import { startNavProgress } from '../NavProgress'
 import { DetailsPane } from './DetailsPane'
 import { DeleteDialog, MoveDialog, NameDialog } from './dialogs'
@@ -26,6 +29,7 @@ type Dialog =
   | { kind: 'move' | 'copy'; items: FileRow[] }
   | { kind: 'delete'; items: FileRow[] }
   | { kind: 'share'; item: FileRow }
+  | { kind: 'add' }
 
 const DRAG_TYPE = 'application/x-avronext-files'
 const EMPTY: Record<string, string> = {
@@ -67,12 +71,40 @@ export function FilesBrowser({ initial, title }: { initial: FilesData; title: st
   const [ctx, setCtx] = useState<{ x: number; y: number } | null>(null)
   const fileInput = useRef<HTMLInputElement>(null)
   const folderInput = useRef<HTMLInputElement>(null)
+  const cameraInput = useRef<HTMLInputElement>(null)
+  const params = useSearchParams()
   const listRef = useRef<HTMLDivElement>(null)
   const dragDepth = useRef(0)
 
   const isFolderView = view === 'files'
   const canCreateHere = isFolderView && can.create(folder?.permissions ?? '')
   const upload = useUploadFlow()
+  // Uploads from Recent/Favourites/Shared land in My files.
+  const uploadDir = isFolderView ? path : '/'
+  const canAdd = isFolderView ? canCreateHere : true
+
+  // Phones: the + button, and the app-icon shortcut "Upload file" (/files?add=1), open the Add sheet.
+  useEffect(() => {
+    const onFab = (e: Event) => (e as CustomEvent<string>).detail === 'files' && canAdd && setDialog({ kind: 'add' })
+    window.addEventListener(FAB_EVENT, onFab)
+    return () => window.removeEventListener(FAB_EVENT, onFab)
+  }, [canAdd])
+  useEffect(() => {
+    if (params.get('add') === '1' && canAdd) setDialog({ kind: 'add' })
+  }, [params, canAdd])
+  // Files shared from another app ("Save to Files" on /share) upload here, once.
+  const sharedTaken = useRef(false)
+  useEffect(() => {
+    if (params.get('shared') !== '1' || !isFolderView || sharedTaken.current) return
+    sharedTaken.current = true
+    readShared().then((shared) => {
+      if (!shared?.files.length) return
+      clearShared()
+      startUpload(path, { files: shared.files.map((file) => ({ file, rel: file.name })), dirs: [] })
+      window.history.replaceState(null, '', folderHref(path))
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params, isFolderView, path])
 
   useEffect(() => {
     setLayout(readPref('avronext.files.layout', 'list'))
@@ -506,7 +538,24 @@ export function FilesBrowser({ initial, title }: { initial: FilesData; title: st
           multiple
           hidden
           onChange={(e) => {
-            if (e.target.files) startUpload(path, collectInput(e.target.files))
+            if (e.target.files) startUpload(uploadDir, collectInput(e.target.files))
+            e.target.value = ''
+          }}
+        />
+        {/* Phones: opens the camera; the photo uploads straight into this folder. */}
+        <input
+          ref={cameraInput}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) {
+              const ext = (f.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg')
+              const name = /^image\.\w+$/i.test(f.name) || !f.name ? `Photo ${new Date().toISOString().slice(0, 19).replace('T', ' ').replace(/:/g, '.')}.${ext}` : f.name
+              startUpload(uploadDir, { files: [{ file: new File([f], name, { type: f.type }), rel: name }], dirs: [] })
+            }
             e.target.value = ''
           }}
         />
@@ -707,7 +756,7 @@ export function FilesBrowser({ initial, title }: { initial: FilesData; title: st
           title="New folder"
           action="Create"
           initial="New folder"
-          parent={path}
+          parent={uploadDir}
           onClose={() => setDialog(null)}
           onDone={(item) => {
             setItems((its) => [...its.filter((i) => i.path !== item.path), item])
@@ -759,6 +808,33 @@ export function FilesBrowser({ initial, title }: { initial: FilesData; title: st
         />
       )}
       {upload.dialog}
+      {dialog?.kind === 'add' && (
+        <Modal title={`Add to ${uploadDir === '/' ? 'My files' : uploadDir.split('/').pop()}`} onClose={() => setDialog(null)} width={420} className="sheet-modal">
+          <div className="sheet-actions">
+            {(
+              [
+                ['camera', 'Take photo', () => cameraInput.current?.click()],
+                ['upload', 'Upload files', () => fileInput.current?.click()],
+                ['folderPlus', 'New folder', () => setDialog({ kind: 'newFolder' })],
+              ] as const
+            ).map(([icon, label, run]) => (
+              <button
+                key={label}
+                className="sheet-action"
+                onClick={() => {
+                  if (icon !== 'folderPlus') setDialog(null)
+                  run()
+                }}
+              >
+                <span className="sheet-action-icon">
+                  <Icon name={icon} size={22} />
+                </span>
+                {label}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
       {viewing && (
         <FileViewer
           items={viewable}

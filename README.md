@@ -8,6 +8,8 @@ A modern, Jira/Confluence-style front end for **Nextcloud**.
 - **People and permissions**: project settings › People (Viewer / Member / Admin for users, groups and Nextcloud teams, on top of Deck sharing) and space settings (Member / Moderator / Admin, who may edit and share pages, icon, trash; on top of the collective's team).
 - **Administration** (Nextcloud admins and group admins): users (add with an emailed invite or a password, edit, groups, group-admin rights, admin rights, quota, disable, reset password, resend invite, delete) and groups (create, rename, delete). Nextcloud enforces every permission; group admins only see their groups.
 - **Files** (OneDrive-like) on top of **Nextcloud Files**: My files, Recent, Favourites, Shared with me / by me; list and tile views; drag-and-drop upload of files and whole folders (chunked, so big files work); download (zip for several items), rename, move/copy, delete; sharing with people, groups and teams or by public link (password, expiry). A read-only viewer for images, PDF, video/audio, text/Markdown, Word, Excel and PowerPoint, all in the browser (no Nextcloud Office needed).
+- **Notes** (Google Keep-like), stored as Nextcloud Notes app files so the Notes app and its phone apps see the same notes: text and checklist notes, pin, colours, labels, archive, images (paste, drop or attach), search, and sharing through Nextcloud. Notes open instantly from a browser copy and sync in the background; edits made offline are saved when the connection is back, and a note changed on two devices keeps both versions.
+- **Installable mobile app (PWA)**: Install from the profile menu (or the browser's Add to Home Screen). On phones: a bottom tab bar, a + button for the current screen, bottom sheets, full-screen issues, one board column at a time, a camera button in Files, app-icon shortcuts (New note, New issue, Upload, My issues) and, on Android, sharing photos, files and links from other apps into Files, a note or an issue. A friendly offline screen when there's no connection. AvroNext must be served over HTTPS to be installable.
 - **Light / Dark / System theme**, remembered per browser.
 - **Your work**: issues assigned to you, issues due this week, recently updated pages and issues.
 - **Search** across issue titles/descriptions, page titles and page content.
@@ -70,6 +72,7 @@ The app password is kept only in an encrypted, `httpOnly` cookie (AES-256-GCM, k
 | Page | Collectives page (a Markdown file in the user's `Collectives/` folder) |
 | Issue attachment | Deck card attachment (the file lands in the uploader's `Deck/` folder, shared with the board) |
 | Page attachment | A file in the page's `.attachments.<page id>/` folder, the same place Nextcloud Text puts them |
+| Note | A Markdown file in the user's `Notes/` folder (as the Nextcloud Notes app stores it); pinned = favourite, archived = `Notes/Archive/`, colour and labels in `Notes/.avronext-notes.json` |
 | Files | The user's Nextcloud Files (WebDAV), sharing via the Nextcloud Share API. The `Collectives/` folder is hidden (Spaces covers it) |
 
 Pages are saved with a WebDAV `PUT` guarded by `If-Match`. If someone changed the page in Nextcloud while you were editing, AvroNext asks before overwriting. People, sharing and team membership are managed in Nextcloud (Deck sharing, Contacts › Teams).
