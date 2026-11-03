@@ -57,6 +57,11 @@ const PATHS = {
   unarchive: 'M3 4h18v4H3zm1 5h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zm8 2.6-4 4 1.4 1.4 1.6-1.6V19h2v-3.6l1.6 1.6 1.4-1.4z',
   textMode: 'M4 5h16v2H4zm0 4h16v2H4zm0 4h16v2H4zm0 4h10v2H4z',
   cloudOff: 'M3.3 2 22 20.7 20.7 22l-2.3-2.3H7a5 5 0 0 1-1.4-9.8L2 3.3zM8 10H7a3 3 0 1 0 0 6h9.7zm4-5a7 7 0 0 1 6.9 5.9A4.5 4.5 0 0 1 21.6 18l-1.5-1.5A2.5 2.5 0 0 0 18 13h-1v-1a5 5 0 0 0-7.6-4.3L8 6.3A7 7 0 0 1 12 5',
+  bookFilled: 'M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m1 3v7l2.5-1.6L12 12V5z',
+  bulbFilled: 'M12 2a7 7 0 0 1 4 12.7V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.3A7 7 0 0 1 12 2M9 19h6v2H9z',
+  arrowBack: 'M20 11v2H7.8l5.6 5.6L12 20l-8-8 8-8 1.4 1.4L7.8 11z',
+  camera: 'M9 3h6l1.8 2H20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3.2zm3 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10m0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6',
+  install: 'M11 3h2v9.2l3.3-3.3 1.4 1.4L12 16l-5.7-5.7 1.4-1.4 3.3 3.3zM5 18h14v3H5z',
 } as const
 
 export type IconName = keyof typeof PATHS

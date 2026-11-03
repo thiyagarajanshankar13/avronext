@@ -134,7 +134,11 @@ export class NotesStore {
     idbGet(this.uid)
       .catch(() => undefined)
       .then((snap) => {
-        if (snap?.notes) this.set({ notes: snap.notes, labels: snap.labels ?? [], root: snap.root ?? '/Notes' })
+        // Merge: a note created before the copy finished loading (e.g. from the share sheet) must survive.
+        if (snap?.notes) {
+          const fresh = this.state.notes.filter((n) => !snap.notes.some((c) => c.key === n.key))
+          this.set({ notes: [...fresh, ...snap.notes], labels: snap.labels ?? [], root: snap.root ?? '/Notes' })
+        }
         this.set({ ready: true })
         this.sync()
       })

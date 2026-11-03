@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { FAB_EVENT } from '@/lib/fab'
 import type { FileRow } from '@/app/(app)/files/data'
 import { fmtRelative } from '@/lib/format'
 import { splitBody } from '@/lib/notesModel'
@@ -26,6 +27,16 @@ export function NotesApp({ uid }: { uid: string }) {
   const [editingLabels, setEditingLabels] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  // Phones' + button and the app-icon shortcut "New note" (/notes?new=1) open the composer.
+  const [composeSignal, setComposeSignal] = useState(0)
+  useEffect(() => {
+    const onFab = (e: Event) => (e as CustomEvent<string>).detail === 'notes' && setComposeSignal((n) => n + 1)
+    window.addEventListener(FAB_EVENT, onFab)
+    return () => window.removeEventListener(FAB_EVENT, onFab)
+  }, [])
+  useEffect(() => {
+    if (params.get('new') === '1') setComposeSignal((n) => n + 1)
+  }, [params])
   const imageFor = useRef<string | null>(null)
   const picker = useImagePicker((files) => imageFor.current && addImages(store, imageFor.current, files, setToast))
   const pickImages = (key: string) => {
@@ -131,7 +142,7 @@ export function NotesApp({ uid }: { uid: string }) {
           </span>
         </div>
 
-        {view.kind !== 'archive' && <Composer store={store} labels={state.labels} defaultLabel={view.kind === 'label' ? view.label : null} onError={setToast} />}
+        {view.kind !== 'archive' && <Composer store={store} labels={state.labels} defaultLabel={view.kind === 'label' ? view.label : null} onError={setToast} openSignal={composeSignal} />}
 
         {loading ? (
           <div className="notes-grid">
@@ -211,9 +222,26 @@ function SaveFirst({ onClose }: { onClose: () => void }) {
 }
 
 /** "Take a note…": expands on focus; the note is created on the first keystroke and saved as you type. */
-function Composer({ store, labels, defaultLabel, onError }: { store: NotesStore; labels: string[]; defaultLabel: string | null; onError: (msg: string) => void }) {
+function Composer({
+  store,
+  labels,
+  defaultLabel,
+  onError,
+  openSignal,
+}: {
+  store: NotesStore
+  labels: string[]
+  defaultLabel: string | null
+  onError: (msg: string) => void
+  openSignal: number
+}) {
   const [key, setKey] = useState<string | null>(null)
   const [open, setOpen] = useState<false | 'text' | 'list'>(false)
+  useEffect(() => {
+    if (!openSignal) return
+    setOpen((o) => o || 'text')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [openSignal])
   const box = useRef<HTMLDivElement>(null)
   const note = key ? store.find(key) : undefined
   const picker = useImagePicker((files) => {

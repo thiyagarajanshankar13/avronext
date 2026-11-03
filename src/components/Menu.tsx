@@ -72,23 +72,30 @@ export function Menu({
       {open &&
         (floating
           ? createPortal(
-              // Clicks inside stay with the menu's owner (e.g. don't open the note behind it).
-              <div
-                ref={panel}
-                className={`menu-panel menu-${align} menu-floating ${className}-panel`}
-                role="menu"
-                // Hidden for the first frame while it's measured.
-                style={pos ?? { position: 'fixed', visibility: 'hidden', top: 0, left: 0 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {children(() => setOpen(false))}
-              </div>,
+              <>
+                {/* Phones show menus as bottom sheets over a backdrop (hidden on larger screens). */}
+                <div className="menu-backdrop" onClick={() => setOpen(false)} />
+                {/* Clicks inside stay with the menu's owner (e.g. don't open the note behind it). */}
+                <div
+                  ref={panel}
+                  className={`menu-panel menu-${align} menu-floating ${className}-panel`}
+                  role="menu"
+                  // Hidden for the first frame while it's measured.
+                  style={pos ?? { position: 'fixed', visibility: 'hidden', top: 0, left: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {children(() => setOpen(false))}
+                </div>
+              </>,
               document.body,
             )
           : (
-              <div className={`menu-panel menu-${align}`} role="menu">
-                {children(() => setOpen(false))}
-              </div>
+              <>
+                <div className="menu-backdrop" onClick={() => setOpen(false)} />
+                <div className={`menu-panel menu-${align}`} role="menu">
+                  {children(() => setOpen(false))}
+                </div>
+              </>
             ))}
     </div>
   )
