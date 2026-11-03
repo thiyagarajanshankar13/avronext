@@ -106,6 +106,10 @@ export function SpaceSidebar({
             <Icon name="home" /> Overview
           </Link>
         )}
+        {/* Phones: the page tree opens as a sheet from this chip. */}
+        <button className="side-link side-pages-btn" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+          <Icon name="page" /> Pages
+        </button>
         <a className="side-link" href={nextcloudHref} target="_blank" rel="noopener noreferrer">
           <Icon name="external" /> Open in Collectives
         </a>
@@ -114,7 +118,8 @@ export function SpaceSidebar({
             <Icon name="settings" /> Space settings
           </Link>
         )}
-        <div className="side-group-label side-group-row">
+        {open && <div className="side-sheet-backdrop" onClick={() => setOpen(false)} />}
+        <div className="side-group-label side-group-row side-pages-head">
           <span>Content</span>
           {canEdit && (
             <button className="tree-add is-visible" title="Create page" aria-label="Create page" disabled={pending} onClick={() => newPage(null)}>

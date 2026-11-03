@@ -5416,3 +5416,125 @@ img.slide-shape {
   text-align: center;
   color: var(--text-subtlest);
 }
+
+/* Phones: section menus are a row of icon chips instead of a ☰ menu. */
+.side-pages-btn,
+.side-sheet-backdrop {
+  display: none;
+}
+@media (max-width: 760px) {
+  .sidebar {
+    position: sticky;
+    top: var(--nav-h);
+    z-index: 20;
+    background: var(--bg);
+  }
+  .sidebar .sidebar-toggle {
+    display: none;
+  }
+  .sidebar .sidebar-inner,
+  .sidebar.is-open .sidebar-inner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 12px;
+    scrollbar-width: none;
+  }
+  .sidebar .sidebar-inner::-webkit-scrollbar {
+    display: none;
+  }
+  .sidebar .sidebar-head,
+  .sidebar .side-sep,
+  .sidebar .side-group-label,
+  .sidebar .tree-empty {
+    display: none;
+  }
+  .sidebar .side-link,
+  .sidebar .side-label {
+    flex-shrink: 0;
+    width: auto;
+    height: 36px;
+    gap: 6px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface-raised);
+    color: var(--text-subtle);
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .sidebar .side-link.is-active,
+  .sidebar .side-label.is-on {
+    border-color: transparent;
+    background: var(--bg-selected);
+    color: var(--brand);
+    font-weight: 600;
+  }
+  /* "Open in Deck/Collectives/Nextcloud" go last. */
+  .sidebar .side-link[target='_blank'] {
+    order: 10;
+  }
+  .sidebar .side-labels {
+    display: contents;
+  }
+  .sidebar .side-labels li {
+    flex-shrink: 0;
+  }
+  .sidebar .side-label-title {
+    flex: none;
+  }
+  .sidebar .side-label-check {
+    display: none;
+  }
+  .sidebar span:has(> .side-link) {
+    flex-shrink: 0;
+  }
+  /* Space page tree: a sheet opened from the "Pages" chip. */
+  .side-pages-btn {
+    display: flex;
+  }
+  .sidebar .page-tree {
+    display: none;
+  }
+  .sidebar.is-open .page-tree {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 210;
+    max-height: 70vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 18px 12px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 16px 16px 0 0;
+    background: var(--surface-overlay);
+    box-shadow: var(--shadow-overlay);
+    animation: sheet-up 0.2s ease-out;
+  }
+  .sidebar.is-open .page-tree::before {
+    content: 'Pages';
+    display: block;
+    padding: 0 8px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    border-top: 4px solid transparent;
+    background: linear-gradient(var(--border-strong), var(--border-strong)) top center / 36px 4px no-repeat;
+    padding-top: 14px;
+    opacity: 0.9;
+  }
+  .sidebar.is-open .side-sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 205;
+    background: #091e4266;
+  }
+  body:has(.sidebar.is-open .page-tree) .bottomnav,
+  body:has(.sidebar.is-open .page-tree) .fab {
+    display: none;
+  }
+}
