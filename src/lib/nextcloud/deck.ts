@@ -199,6 +199,9 @@ export async function listAttachments(s: Session, boardId: number, stackId: numb
 export async function uploadAttachment(s: Session, boardId: number, stackId: number, cardId: number, file: File): Promise<DeckAttachment> {
   const form = new FormData()
   form.set('type', 'file')
+  // Some Deck releases (Nextcloud 33/34) declare `data` as a required string and answer a
+  // bare 400 without it. Deck replaces it with the stored file name, so the name is fine.
+  form.set('data', file.name)
   form.set('file', file, file.name)
   return ncJson<DeckAttachment>(s, attachmentsPath(boardId, stackId, cardId), { method: 'POST', raw: form, app: APP })
 }

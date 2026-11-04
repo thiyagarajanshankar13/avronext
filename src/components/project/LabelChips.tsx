@@ -13,6 +13,7 @@ export function LabelChips({
   onAdd,
   available = [],
   prefix = 'Will get',
+  onCreate,
 }: {
   labels: DeckLabel[]
   onRemove: (label: DeckLabel) => void
@@ -20,9 +21,11 @@ export function LabelChips({
   onAdd?: (label: DeckLabel) => void
   available?: DeckLabel[]
   prefix?: string
+  /** Adds a "New label…" choice to the picker. */
+  onCreate?: () => void
 }) {
   const rest = available.filter((l) => !labels.some((x) => x.id === l.id))
-  if (!labels.length && !(onAdd && rest.length)) return null
+  if (!labels.length && !(onAdd && (rest.length || onCreate))) return null
   return (
     <div className="label-chips">
       {labels.length > 0 && <span className="label-chips-prefix">{prefix}:</span>}
@@ -34,12 +37,13 @@ export function LabelChips({
           </button>
         </span>
       ))}
-      {onAdd && rest.length > 0 && (
+      {onAdd && (rest.length > 0 || onCreate) && (
         <select
           className="label-add"
           value=""
           aria-label="Add a label"
           onChange={(e) => {
+            if (e.target.value === 'new') return onCreate?.()
             const l = rest.find((x) => x.id === Number(e.target.value))
             if (l) onAdd(l)
           }}
@@ -50,6 +54,7 @@ export function LabelChips({
               {l.title}
             </option>
           ))}
+          {onCreate && <option value="new">New label…</option>}
         </select>
       )}
     </div>

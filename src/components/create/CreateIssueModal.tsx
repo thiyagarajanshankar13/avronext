@@ -1,11 +1,12 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState, useTransition } from 'react'
-import { createIssue, loadIssueOptions } from '@/app/(app)/projects/actions'
+import { createIssue, createLabel, loadIssueOptions } from '@/app/(app)/projects/actions'
 import type { DeckLabel } from '@/lib/nextcloud/deck'
 import { RichEditor, type RichEditorHandle } from '../editor/RichEditor'
 import { boardFilterLabels } from '../project/boardFilterContext'
 import { LabelChips } from '../project/LabelChips'
+import { nextLabelColor } from '../project/status'
 import { ISSUE_CREATED } from '../project/useBoard'
 import { Modal } from '../Modal'
 import { startNavProgress } from '../NavProgress'
@@ -141,7 +142,7 @@ export function CreateIssueModal({
               <RichEditor ref={descEditor} initialMarkdown="" variant="compact" placeholder="Add a description… Type '/' for commands" onSubmit={submit} />
             </div>
           </div>
-          {projectLabels.length > 0 && (
+          {projectId && (
             <div className="field">
               <span>Labels</span>
               <LabelChips
@@ -150,6 +151,16 @@ export function CreateIssueModal({
                 available={projectLabels}
                 onRemove={(l) => setLabels((all) => all.filter((x) => x.id !== l.id))}
                 onAdd={(l) => setLabels((all) => [...all, l])}
+                onCreate={async () => {
+                  const title = window.prompt('New label name')?.trim()
+                  if (!title || !projectId) return
+                  const existing = projectLabels.find((l) => l.title.toLowerCase() === title.toLowerCase())
+                  if (existing) return setLabels((all) => (all.some((x) => x.id === existing.id) ? all : [...all, existing]))
+                  const r = await createLabel(projectId, title, nextLabelColor(projectLabels.length))
+                  if (!r.ok) return setError(r.error)
+                  setProjectLabels((all) => [...all, r.data])
+                  setLabels((all) => [...all, r.data])
+                }}
               />
             </div>
           )}

@@ -154,7 +154,7 @@ export function UsersClient({
                     {u.groups.length > 3 && <span className="muted small">+{u.groups.length - 3}</span>}
                   </span>
                 </td>
-                <td className="col-date hide-sm muted">{u.lastLogin ? fmtRelative(u.lastLogin) : 'Never'}</td>
+                <td className="col-date hide-sm muted" suppressHydrationWarning>{u.lastLogin ? fmtRelative(u.lastLogin) : 'Never'}</td>
                 <td className="hide-md muted small">{quotaLabel(u)}</td>
                 <td className="col-status">
                   <span className="chip-list">

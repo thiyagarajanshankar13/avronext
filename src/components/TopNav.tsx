@@ -199,8 +199,8 @@ export function TopNav({
           <Icon name="search" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search" aria-label="Search issues and pages" />
         </form>
-        <Link prefetch={false} href="/search" className="icon-btn show-sm" aria-label="Search">
-          <Icon name="search" size={20} />
+        <Link prefetch={false} href="/search" className="icon-btn show-sm nav-search-btn" aria-label="Search">
+          <Icon name="search" size={26} />
         </Link>
         <Menu align="right" label="Your profile" trigger={<Avatar uid={user.uid} name={user.name} size={28} />}>
           {() => (
