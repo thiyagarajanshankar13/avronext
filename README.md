@@ -7,6 +7,7 @@
 A modern, Jira/Confluence-style front end for **Nextcloud**.
 
 **Website, screenshots and setup guide: https://thiyagarajanshankar13.github.io/avronext/**
+
 What's new: [release notes](https://thiyagarajanshankar13.github.io/avronext/releases.html).
 
 ![AvroNext project board](https://raw.githubusercontent.com/thiyagarajanshankar13/avronext/gh-pages/assets/screens/board-light.jpg)
