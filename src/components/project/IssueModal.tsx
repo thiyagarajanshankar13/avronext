@@ -1,10 +1,10 @@
 'use client'
 import { useEffect, useRef, useState, useTransition } from 'react'
-import { addComment, deleteComment, loadComments } from '@/app/(app)/projects/actions'
+import { addComment, createLabel, deleteComment, loadComments } from '@/app/(app)/projects/actions'
 import { fmtDateTime, fmtRelative, isoToDateInput } from '@/lib/format'
 import { issueKey } from '@/lib/keys'
 import { useMarkdownHtml } from '@/lib/markdown.client'
-import type { DeckAttachment, DeckBoard, DeckComment } from '@/lib/nextcloud/deck'
+import type { DeckAttachment, DeckBoard, DeckComment, DeckLabel } from '@/lib/nextcloud/deck'
 import { useUploadQueue } from '../attachments/Attachments'
 import { RichEditor, type RichEditorHandle } from '../editor/RichEditor'
 import { uploadWithProgress } from '../attachments/upload'
@@ -14,7 +14,7 @@ import { Icon } from '../Icon'
 import { Lozenge } from '../Lozenge'
 import { Menu } from '../Menu'
 import { IssueAttachments } from './IssueAttachments'
-import { labelStyle, statusTone } from './status'
+import { labelStyle, nextLabelColor, statusTone } from './status'
 import type { BoardApi } from './useBoard'
 
 export function IssueModal({
@@ -486,6 +486,10 @@ function Labels({
   disabled: boolean
 }) {
   const ids = new Set(labels.map((l) => l.id))
+  // Labels made here show at once, before the board's own list refreshes.
+  const [made, setMade] = useState<DeckLabel[]>([])
+  const all = [...board.labels, ...made.filter((m) => !board.labels.some((l) => l.id === m.id))]
+  const canCreate = board.permissions.PERMISSION_MANAGE
   return (
     <div className="chip-list">
       {labels.length === 0 && <span className="muted">None</span>}
@@ -494,21 +498,70 @@ function Labels({
           {l.title}
         </span>
       ))}
-      {!disabled && board.labels.length > 0 && (
-        <Menu align="right" label="Change labels" trigger={<span className="link-btn">Edit</span>}>
-          {() =>
-            board.labels.map((l) => (
-              <label key={l.id} className="menu-item menu-check">
-                <input type="checkbox" checked={ids.has(l.id)} onChange={(e) => api.toggleLabel(cardId, l, e.target.checked)} />
-                <span className="label-chip" style={labelStyle(l.color)}>
-                  {l.title}
-                </span>
-              </label>
-            ))
-          }
+      {!disabled && (all.length > 0 || canCreate) && (
+        <Menu align="right" label="Change labels" trigger={<span className="link-btn">{labels.length ? 'Edit' : 'Add'}</span>}>
+          {() => (
+            <>
+              {all.map((l) => (
+                <label key={l.id} className="menu-item menu-check">
+                  <input type="checkbox" checked={ids.has(l.id)} onChange={(e) => api.toggleLabel(cardId, l, e.target.checked)} />
+                  <span className="label-chip" style={labelStyle(l.color)}>
+                    {l.title}
+                  </span>
+                </label>
+              ))}
+              {canCreate ? (
+                <NewLabel
+                  boardId={board.id}
+                  existing={all}
+                  onMade={(l) => {
+                    setMade((m) => [...m, l])
+                    if (!ids.has(l.id)) api.toggleLabel(cardId, l, true)
+                  }}
+                />
+              ) : (
+                all.length === 0 && <p className="menu-note muted small">No labels yet. A project admin can add them.</p>
+              )}
+            </>
+          )}
         </Menu>
       )}
     </div>
+  )
+}
+
+/** "New label" box at the bottom of the label menu: creates it in Deck and adds it to the issue. */
+function NewLabel({ boardId, existing, onMade }: { boardId: number; existing: DeckLabel[]; onMade: (label: DeckLabel) => void }) {
+  const [title, setTitle] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  return (
+    <form
+      className="menu-new-label"
+      onSubmit={async (e) => {
+        e.preventDefault()
+        const t = title.trim()
+        if (!t) return
+        const same = existing.find((l) => l.title.toLowerCase() === t.toLowerCase())
+        if (same) {
+          onMade(same)
+          return setTitle('')
+        }
+        setBusy(true)
+        setError(null)
+        const r = await createLabel(boardId, t, nextLabelColor(existing.length))
+        setBusy(false)
+        if (!r.ok) return setError(r.error)
+        onMade(r.data)
+        setTitle('')
+      }}
+    >
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New label" maxLength={100} aria-label="New label name" />
+      <button className="btn btn-default btn-sm" disabled={busy || !title.trim()}>
+        Add
+      </button>
+      {error && <p className="menu-note small form-error-text">{error}</p>}
+    </form>
   )
 }
 

@@ -7,9 +7,8 @@ import { useGoFresh } from '@/lib/useGoFresh'
 import { ColorPicker, PROJECT_COLORS } from '../create/CreateProjectModal'
 import { Icon } from '../Icon'
 import { ProjectPeople } from './ProjectPeople'
-import { labelStyle } from './status'
+import { LABEL_COLORS, labelStyle } from './status'
 
-const LABEL_COLORS = ['31cc7c', '317ccc', 'ff7a66', 'f1db50', '9c4dcc', '0c66e4', 'ae2e24', '626f86']
 
 export function ProjectSettingsClient({ board, me }: { board: DeckBoard; me: string }) {
   const goFresh = useGoFresh()

@@ -5538,3 +5538,35 @@ img.slide-shape {
     display: none;
   }
 }
+
+/* Phone search button: a proper tap target next to the avatar. */
+.nav-search-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+/* "New label" box at the bottom of the issue panel's label menu. */
+.menu-new-label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px 4px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+.menu-new-label input {
+  flex: 1;
+  min-width: 0;
+}
+.menu-new-label .menu-note {
+  flex-basis: 100%;
+  margin: 0;
+}
+.menu-note {
+  padding: 6px 12px;
+  margin: 0;
+}
+.form-error-text {
+  color: var(--danger);
+}
