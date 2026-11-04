@@ -665,3 +665,142 @@ details p {
     transition: none;
   }
 }
+
+/* Release notes page */
+.nav-links a[aria-current='page'] {
+  color: var(--brand);
+}
+.releases {
+  padding: 56px 0 32px;
+}
+.rel-wrap {
+  max-width: 860px;
+}
+.rel-title {
+  margin: 0 0 10px;
+  font-size: clamp(30px, 4vw, 44px);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.rel-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 40px;
+}
+.rel-toc a {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--bg-soft);
+}
+.rel-toc a:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.rel {
+  padding: 32px 0 16px;
+  border-top: 1px solid var(--border);
+}
+.rel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-bottom: 8px;
+}
+.rel-head h2 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+.rel-head time {
+  color: var(--muted);
+  font-size: 15px;
+}
+.rel-badge {
+  align-self: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+}
+.rel-group {
+  margin: 24px 0;
+}
+.rel-group h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-size: 19px;
+}
+.rel-group p,
+.rel-group ul {
+  margin: 0 0 10px;
+}
+.rel-group li {
+  margin: 4px 0;
+}
+.rel-kind {
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.rel-new {
+  color: #216e4e;
+  background: #dcfff1;
+}
+.rel-improved {
+  color: #0055cc;
+  background: #e9f2ff;
+}
+.rel-fixed {
+  color: #a54800;
+  background: #fff3eb;
+}
+@media (prefers-color-scheme: dark) {
+  .rel-new {
+    color: #7ee2b8;
+    background: #1c3329;
+  }
+  .rel-improved {
+    color: #85b8ff;
+    background: #1c2b41;
+  }
+  .rel-fixed {
+    color: #fec195;
+    background: #38291e;
+  }
+}
+.rel-shots {
+  margin-top: 16px;
+}
+.rel-shots-phone {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  gap: 16px;
+}
+@media (max-width: 560px) {
+  .releases {
+    padding-top: 32px;
+  }
+  .rel-head h2 {
+    font-size: 23px;
+  }
+  .rel-shots-phone {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

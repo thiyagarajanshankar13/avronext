@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Release notes · AvroNext</title>
+    <meta name="description" content="What's new in AvroNext, the modern front end for your own Nextcloud: every release, newest first." />
+    <meta name="theme-color" content="#0c66e4" />
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Release notes · AvroNext" />
+    <meta property="og:description" content="What's new in AvroNext: every release, newest first." />
+    <meta property="og:image" content="https://thiyagarajanshankar13.github.io/avronext/assets/og.jpg" />
+    <meta property="og:url" content="https://thiyagarajanshankar13.github.io/avronext/releases.html" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="./"><img src="assets/logo.svg" alt="" width="28" height="28" /> AvroNext</a>
+        <nav class="nav-links" aria-label="Sections">
+          <a href="./#features">Features</a>
+          <a href="./#mobile">Mobile</a>
+          <a href="./#gallery">Screenshots</a>
+          <a href="./#start">Get started</a>
+          <a href="releases.html" aria-current="page">Releases</a>
+        </nav>
+        <a class="btn btn-ghost nav-gh" href="https://github.com/thiyagarajanshankar13/avronext"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+      </div>
+    </header>
+
+    <main id="top" class="releases">
+      <div class="wrap rel-wrap">
+        <p class="eyebrow">Release notes</p>
+        <h1 class="rel-title">What's new in AvroNext</h1>
+        <p class="lead">Every release, newest first. To update, pull the latest <code>main</code> and redeploy: nothing to migrate, because AvroNext keeps no data of its own.</p>
+
+        <nav class="rel-toc" aria-label="Releases">
+          <a href="#2026-11-04">4 Nov 2026 · Phone menus, labels and attachments</a>
+          <a href="#2026-11-03">3 Nov 2026 · Notes and the mobile app</a>
+          <a href="#2026-10-31">31 Oct 2026 · First public release</a>
+        </nav>
+
+        <!-- ───────────── 4 Nov 2026 ───────────── -->
+        <article class="rel" id="2026-11-04">
+          <header class="rel-head">
+            <span class="rel-badge">Latest</span>
+            <h2>Phone menus, labels and attachments</h2>
+            <time datetime="2026-11-04">4 November 2026</time>
+          </header>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-new">New</span> Section menus as icon chips on phones</h3>
+            <p>
+              The ☰ menu button is gone. On a phone, each section's menu (Board / List / Project settings, the Files views, Notes labels,
+              Space settings, Administration) is now a row of icon chips under the title bar. The row stays put while you scroll and
+              scrolls sideways when it doesn't fit, so every screen is one tap away.
+            </p>
+            <p>In a space, the page tree opens as a bottom sheet from the new <strong>Pages</strong> chip.</p>
+            <div class="rel-shots rel-shots-phone">
+              <button class="zoom" data-src="assets/screens/phone-chips-light.jpg"><img class="shot phone" loading="lazy" src="assets/screens/phone-chips-light.jpg" alt="Project board on a phone with Board, List and Project settings chips under the title" /></button>
+              <button class="zoom" data-src="assets/screens/phone-pages-light.jpg"><img class="shot phone" loading="lazy" src="assets/screens/phone-pages-light.jpg" alt="A space on a phone with the Pages sheet open" /></button>
+            </div>
+          </section>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-new">New</span> Create labels while you label an issue</h3>
+            <ul>
+              <li>The issue panel's label menu has a <strong>New label</strong> box at the bottom: type a name and press Add. The label is created for the project and put on the issue straight away.</li>
+              <li>The <strong>Create issue</strong> dialog's label picker has <strong>New label…</strong>, and the Labels field now shows even when the project has no labels yet.</li>
+              <li>Typing a name that already exists reuses that label instead of making a duplicate. New labels take the next colour from the project palette.</li>
+              <li>Like in Deck, creating labels needs the project's <em>manage</em> permission; everyone else can still pick from the existing ones.</li>
+            </ul>
+            <div class="rel-shots">
+              <button class="zoom" data-src="assets/screens/issue-new-label-light.jpg"><img class="shot" loading="lazy" src="assets/screens/issue-new-label-light.jpg" alt="Issue panel label menu with a New label box" /></button>
+            </div>
+          </section>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-improved">Improved</span> Bigger search button on phones</h3>
+            <p>The search icon in the phone title bar is larger and has a full-size tap target.</p>
+          </section>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-fixed">Fixed</span> Attaching files to issues on Nextcloud 33 and 34</h3>
+            <p>
+              On newer Nextcloud servers every upload to an issue failed with <code>Nextcloud returned 400</code>. Deck for Nextcloud 33/34
+              expects a <code>data</code> field with each upload, and Nextcloud rejects the request before Deck runs when it's missing.
+              AvroNext now sends it, and older Deck versions keep working. Sharing a file into a new issue from the phone share sheet
+              uses the same upload and is fixed too.
+            </p>
+            <p class="muted">If an upload failed before you updated, press <strong>Dismiss</strong> on it and attach the file again.</p>
+          </section>
+        </article>
+
+        <!-- ───────────── 3 Nov 2026 ───────────── -->
+        <article class="rel" id="2026-11-03">
+          <header class="rel-head">
+            <h2>Notes and the mobile app</h2>
+            <time datetime="2026-11-03">1–3 November 2026</time>
+          </header>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-new">New</span> Keep-style Notes</h3>
+            <ul>
+              <li>Notes are stored exactly like the Nextcloud Notes app, as Markdown files in your own Notes folder, so both apps work on the same notes. No database.</li>
+              <li>Checklists, pinning, archive, colours, labels, images and sharing.</li>
+              <li>Notes are kept in your browser and sync in the background, so they open instantly and survive a lost connection. If two devices change the same note, both versions are kept.</li>
+            </ul>
+          </section>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-new">New</span> Installable mobile app (PWA)</h3>
+            <ul>
+              <li>Install from the profile menu (iPhone: Share → Add to Home Screen).</li>
+              <li>Phone layout with a bottom tab bar, a <strong>+</strong> button for each screen, bottom sheets and full-screen issues.</li>
+              <li>App-icon shortcuts for New note, New issue and Upload. On Android you can share photos, files and links from other apps into Files, a note or an issue.</li>
+            </ul>
+          </section>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-improved">Improved</span> Projects</h3>
+            <ul>
+              <li>The <strong>Create issue</strong> dialog has the full rich-text editor for the description.</li>
+              <li>Avatars without a photo show coloured initials. The board's assignee filter shows faces with a <strong>+N</strong> menu instead of names.</li>
+            </ul>
+          </section>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-fixed">Fixed</span> Logout behind Docker and Railway</h3>
+            <p>Logging out (and some login redirects) sent you to the server's bind address, such as <code>0.0.0.0:8080/login</code>. Redirects now use the address your browser used.</p>
+          </section>
+        </article>
+
+        <!-- ───────────── 31 Oct 2026 ───────────── -->
+        <article class="rel" id="2026-10-31">
+          <header class="rel-head">
+            <h2>First public release</h2>
+            <time datetime="2026-10-31">31 October 2026</time>
+          </header>
+          <section class="rel-group">
+            <p>
+              AvroNext goes open source under AGPL-3.0: Jira-style projects on Nextcloud Deck, Confluence-style spaces on Collectives,
+              OneDrive-style Files with a built-in viewer for PDFs, images, video and Office files, people and administration, light and dark themes.
+              See the <a href="./#features">feature tour</a>.
+            </p>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer-inner">
+        <span><img src="assets/logo.svg" alt="" width="20" height="20" /> AvroNext · © 2026 Avrotech · <a href="https://github.com/thiyagarajanshankar13/avronext/blob/main/LICENSE">AGPL-3.0</a></span>
+        <span class="muted">Not affiliated with or endorsed by Nextcloud GmbH.</span>
+      </div>
+    </footer>
+
+    <div class="lightbox" hidden>
+      <button class="lightbox-close" aria-label="Close">×</button>
+      <img alt="" />
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
