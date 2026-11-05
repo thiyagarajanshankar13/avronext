@@ -5570,3 +5570,45 @@ img.slide-shape {
 .form-error-text {
   color: var(--danger);
 }
+
+/* Resizable sidebar (spaces): a drag handle on its right edge, desktop only. */
+.sidebar.has-resizer {
+  position: relative;
+}
+.sidebar-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -4px;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+  touch-action: none;
+}
+.sidebar-resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 2px;
+  background: transparent;
+  transition: background 0.15s;
+}
+.sidebar-resizer:hover::after,
+.sidebar-resizer:focus-visible::after,
+.is-resizing .sidebar-resizer::after {
+  background: var(--brand);
+}
+.sidebar-resizer:focus-visible {
+  outline: none;
+}
+body.is-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+@media (max-width: 860px) {
+  .sidebar-resizer {
+    display: none;
+  }
+}

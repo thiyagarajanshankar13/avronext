@@ -6,6 +6,7 @@ import { createPage } from '@/app/(app)/spaces/actions'
 import { ancestors, buildTree, type PageLite, type TreeNode } from '@/lib/pageTree'
 import { useGoFresh } from '@/lib/useGoFresh'
 import { Icon } from '../Icon'
+import { SidebarResizer } from '../SidebarResizer'
 
 export function SpaceSidebar({
   space,
@@ -89,7 +90,8 @@ export function SpaceSidebar({
   }
 
   return (
-    <aside className={`sidebar${open ? ' is-open' : ''}`}>
+    <aside className={`sidebar has-resizer${open ? ' is-open' : ''}`}>
+      <SidebarResizer />
       <button className="sidebar-toggle" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
         <Icon name="menu" /> {space.name}
       </button>
