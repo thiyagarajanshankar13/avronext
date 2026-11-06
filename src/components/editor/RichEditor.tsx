@@ -24,6 +24,8 @@ export type RichEditorHandle = {
 
 type Props = {
   initialMarkdown: string
+  /** Start from HTML instead (e.g. a quoted email); the editor still produces Markdown. */
+  initialHtml?: string
   /** 'page' = full toolbar; 'compact' = issue descriptions (no headings 1, tables or panels in the toolbar). */
   variant?: 'page' | 'compact'
   placeholder?: string
@@ -48,7 +50,7 @@ const CALLOUT_LABEL: Record<CalloutType, string> = { info: 'Info', success: 'Suc
  * Nextcloud's callouts can store; see scripts/markdown-roundtrip.ts.
  */
 export const RichEditor = forwardRef<RichEditorHandle, Props>(function RichEditor(
-  { initialMarkdown, variant = 'page', placeholder, autoFocus, resolveSrc, upload, onDirtyChange, onUploadingChange, onError, onSubmit },
+  { initialMarkdown, initialHtml, variant = 'page', placeholder, autoFocus, resolveSrc, upload, onDirtyChange, onUploadingChange, onError, onSubmit },
   ref,
 ) {
   const [slash, setSlash] = useState<SlashState>(null)
@@ -168,8 +170,8 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(function RichEdito
         },
       }),
     ],
-    content: initialMarkdown,
-    contentType: 'markdown',
+    content: initialHtml ?? initialMarkdown,
+    contentType: initialHtml !== undefined ? 'html' : 'markdown',
     editorProps: {
       attributes: { class: `prose rich-content rich-${variant}`, spellcheck: 'true' },
       handleKeyDown: (_view, event) => {

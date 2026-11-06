@@ -1,7 +1,7 @@
 import { NavProgress } from '@/components/NavProgress'
 import { TopNav } from '@/components/TopNav'
 import { RefreshOnArrival } from '@/lib/useGoFresh'
-import { nextcloudPublicUrl } from '@/lib/env'
+import { mailServer, nextcloudPublicUrl } from '@/lib/env'
 import { getAdminScope } from '@/lib/nextcloud/admin'
 import { loadOrSignOut, NextcloudAuthError } from '@/lib/nextcloud/http'
 import { requireSession } from '@/lib/session'
@@ -26,6 +26,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         user={{ uid: session.userId, name: session.displayName }}
         nextcloudUrl={nextcloudPublicUrl()}
         canAdminister={scope.isAdmin || scope.subadminOf.length > 0}
+        mail={Boolean(mailServer())}
         projects={ws.boards.map((b) => ({ id: b.id, title: b.title, color: b.color }))}
         spaces={ws.collectives.map((c) => ({ id: c.id, name: c.name, emoji: c.emoji }))}
       />
