@@ -38,15 +38,64 @@
         <p class="lead">Every release, newest first. To update, pull the latest <code>main</code> and redeploy: nothing to migrate, because AvroNext keeps no data of its own.</p>
 
         <nav class="rel-toc" aria-label="Releases">
+          <a href="#2026-11-06">6 Nov 2026 · Mail, and a resizable space sidebar</a>
           <a href="#2026-11-04">4 Nov 2026 · Phone menus, labels and attachments</a>
           <a href="#2026-11-03">3 Nov 2026 · Notes and the mobile app</a>
           <a href="#2026-10-31">31 Oct 2026 · First public release</a>
         </nav>
 
+        <!-- ───────────── 6 Nov 2026 ───────────── -->
+        <article class="rel" id="2026-11-06">
+          <header class="rel-head">
+            <span class="rel-badge">Latest</span>
+            <h2>Mail, and a resizable space sidebar</h2>
+            <time datetime="2026-11-06">6 November 2026</time>
+          </header>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-new">New</span> Mail</h3>
+            <p>
+              Your email now sits next to your projects, spaces, files and notes. Mail is a view on the
+              <strong>Nextcloud Mail</strong> app, so Nextcloud does the IMAP and SMTP work and keeps the mailbox. AvroNext keeps nothing.
+            </p>
+            <ul>
+              <li><strong>One-time setup.</strong> The admin sets the mail server once (<code>MAIL_IMAP_HOST</code>, <code>MAIL_SMTP_HOST</code> and friends). The first time someone opens Mail they see their email address and username already filled in, type their mail password, and that's it. Next time, and on every other device, Mail opens straight to the inbox.</li>
+              <li><strong>Reading:</strong> inbox and folders with unread counts, conversations with earlier messages folded up, stars, mark as unread, move, delete and search (plain words, or <code>from:</code>, <code>is:unread</code>…).</li>
+              <li><strong>Private by default:</strong> HTML email is shown in a locked-down frame with remote images hidden until you press <strong>Show images</strong>.</li>
+              <li><strong>Writing:</strong> new message, reply, reply all and forward with the same rich text editor as the rest of AvroNext, address suggestions, Cc/Bcc, your signature, and drafts saved as you type.</li>
+              <li><strong>Attachments:</strong> attach from your computer or <strong>from Files</strong>; open, download or <strong>save to Files</strong> any attachment you receive.</li>
+              <li><strong>Keyboard shortcuts</strong> (<kbd>c</kbd> new, <kbd>j</kbd>/<kbd>k</kbd> next/previous, <kbd>r</kbd> reply, <kbd>a</kbd> reply all, <kbd>f</kbd> forward, <kbd>s</kbd> star, <kbd>#</kbd> delete, <kbd>/</kbd> search), an unread badge on the Mail tab, and Mail in the phone tab bar.</li>
+              <li><strong>Big mailboxes:</strong> the first time a folder is opened, Nextcloud downloads its message list, which can take a few minutes for thousands of messages. Mail shows "Getting your mail ready" meanwhile and fills in the list as soon as it's there.</li>
+            </ul>
+            <div class="rel-shots">
+              <button class="zoom" data-src="assets/screens/mail-light.jpg"><img class="shot" loading="lazy" src="assets/screens/mail-light.jpg" alt="Mail inbox with a conversation open" /></button>
+              <button class="zoom" data-src="assets/screens/mail-connect-light.jpg"><img class="shot" loading="lazy" src="assets/screens/mail-connect-light.jpg" alt="Connect your mailbox: email and username filled in, enter your password" /></button>
+            </div>
+            <div class="rel-shots rel-shots-phone">
+              <button class="zoom" data-src="assets/screens/phone-mail-light.jpg"><img class="shot phone" loading="lazy" src="assets/screens/phone-mail-light.jpg" alt="Mail inbox on a phone" /></button>
+              <button class="zoom" data-src="assets/screens/phone-message-light.jpg"><img class="shot phone" loading="lazy" src="assets/screens/phone-message-light.jpg" alt="Reading an email on a phone" /></button>
+            </div>
+            <p class="muted">
+              To turn it on: install the Mail app in Nextcloud, set <code>MAIL_IMAP_HOST</code> and <code>MAIL_SMTP_HOST</code> (ports default to 993 and 465 with SSL),
+              and redeploy. <code>MAIL_USERNAME</code> picks the username people see first: their email (default), their Nextcloud user name, or a pattern like
+              <code>%USERID%@example.com</code>. Without these settings Mail stays hidden and nothing else changes.
+            </p>
+          </section>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-improved">Improved</span> Resizable space sidebar</h3>
+            <p>Drag the edge of a space's page tree to make it wider or narrower. Double-click the edge to reset it. The width is remembered in your browser.</p>
+          </section>
+
+          <section class="rel-group">
+            <h3><span class="rel-kind rel-fixed">Fixed</span> Favicon</h3>
+            <p>The AvroNext icon shows in browser tabs and bookmarks again.</p>
+          </section>
+        </article>
+
         <!-- ───────────── 4 Nov 2026 ───────────── -->
         <article class="rel" id="2026-11-04">
           <header class="rel-head">
-            <span class="rel-badge">Latest</span>
             <h2>Phone menus, labels and attachments</h2>
             <time datetime="2026-11-04">4 November 2026</time>
           </header>
