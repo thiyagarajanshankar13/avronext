@@ -29,7 +29,8 @@ type Props = {
   /** 'page' = full toolbar; 'compact' = issue descriptions (no headings 1, tables or panels in the toolbar). */
   variant?: 'page' | 'compact'
   placeholder?: string
-  autoFocus?: boolean
+  /** Cursor at the start once loaded; `always` also when another field has focus (e.g. a dialog focused its first input). */
+  autoFocus?: boolean | 'always'
   /** Display URL for an image's stored src (relative attachment paths → files proxy). */
   resolveSrc?: (src: string) => string
   /** Enables attaching files (button, paste, drop): stores the file and returns its Markdown href. */
@@ -208,7 +209,7 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(function RichEdito
       baseline.current = markdownOf(ed)
       // Put the cursor at the start, synchronously and only if nothing has focus yet: a deferred
       // focus could land after the user's first click and move their cursor to the top.
-      if (autoFocus && (!document.activeElement || document.activeElement === document.body)) {
+      if (autoFocus === 'always' || (autoFocus && (!document.activeElement || document.activeElement === document.body))) {
         ed.view.focus()
         ed.commands.setTextSelection(1)
       }

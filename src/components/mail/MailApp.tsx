@@ -55,6 +55,8 @@ function sortFolders(boxes: Mailbox[]) {
 }
 
 const signatureHtml = (sig: string | null) => (sig?.trim() ? `<p></p><p>-- <br>${textToHtml(sig.trim())}</p>` : '')
+/** Start of a reply or forward: an empty line to write on (the cursor starts there), then the signature. */
+const replyStart = (sig: string | null) => signatureHtml(sig) || '<p></p>'
 
 /** Quote of the original under "On …, … wrote:" (remote images and inline images dropped). */
 function quote(m: MailMessage) {
@@ -301,7 +303,7 @@ export function MailApp({
         to: [],
         cc: [],
         subject: prefixed('Fwd', m.subject),
-        html: signatureHtml(signature) + `<p>---------- Forwarded message ----------</p>` + quote(m),
+        html: replyStart(signature) + `<p>---------- Forwarded message ----------</p>` + quote(m),
         attachments: m.attachments
           .filter((a) => !a.cid)
           .map((a) => ({ name: a.fileName, size: a.size, att: { type: 'message-attachment' as const, mailboxId: m.mailboxId, uid: m.uid, id: a.id, fileName: a.fileName } })),
@@ -317,7 +319,7 @@ export function MailApp({
       to: to.length ? to : replyTo,
       cc,
       subject: prefixed('Re', m.subject),
-      html: signatureHtml(signature) + quote(m),
+      html: replyStart(signature) + quote(m),
       inReplyToMessageId: m.messageId,
       replyTo: m.databaseId,
     })

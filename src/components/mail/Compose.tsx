@@ -343,7 +343,7 @@ export function Compose({
           initialHtml={init.html}
           variant="compact"
           placeholder="Write your message…"
-          autoFocus={init.to.length > 0}
+          autoFocus={init.to.length > 0 ? 'always' : false}
           onDirtyChange={() => {
             changed.current = true
           }}
