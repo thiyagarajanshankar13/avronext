@@ -5819,6 +5819,13 @@ body.is-resizing {
   padding: 32px 16px;
   text-align: center;
 }
+.mail-preparing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.45;
+}
 .mail-more {
   margin: 12px auto;
 }

@@ -147,7 +147,6 @@ export function MessageView({
   onBack,
   onAction,
   onNote,
-  onGone,
 }: {
   id: number
   mailboxes: Mailbox[]
@@ -155,11 +154,10 @@ export function MessageView({
   onBack: () => void
   onAction: (a: { kind: 'reply'; mode: ReplyMode; message: MailMessage } | { kind: 'edit'; message: MailMessage } | { kind: 'flag'; flagged: boolean } | { kind: 'unread' } | { kind: 'move'; to: number } | { kind: 'delete' }) => void
   onNote: (t: string) => void
-  /** The message was deleted or moved elsewhere meanwhile. */
-  onGone: () => void
 }) {
   const [data, setData] = useState<{ message: MailMessage; thread: MailSummary[] } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [attempt, setAttempt] = useState(0)
   useEffect(() => {
     setData(null)
     setError(null)
@@ -167,15 +165,29 @@ export function MessageView({
     loadMessage(id).then((r) => {
       if (stale) return
       if (r.ok) setData(r.data)
-      else if (/could not load|server error|not found|forbidden/i.test(r.error)) onGone()
-      else setError(r.error)
+      // Nextcloud answers a vague 500 both for a message deleted elsewhere and for a busy or unreachable
+      // mail server, so don't drop it from the list here: the folder sync removes messages that are gone.
+      else
+        setError(
+          /could not load|server error|not found|forbidden/i.test(r.error)
+            ? 'Couldn’t open this message. It may have been moved or deleted, or the mail server is busy.'
+            : r.error,
+        )
     })
     return () => {
       stale = true
     }
-  }, [id])
+  }, [id, attempt])
 
-  if (error) return <div className="mail-reader-empty banner banner-error">{error}</div>
+  if (error)
+    return (
+      <div className="mail-reader-empty">
+        <div className="banner banner-error">{error}</div>
+        <button className="btn btn-default btn-sm" onClick={() => setAttempt((n) => n + 1)}>
+          <Icon name="refresh" /> Try again
+        </button>
+      </div>
+    )
   if (!data) return <div className="mail-reader-empty muted">Loading…</div>
   const m = data.message
   const earlier = data.thread.filter((t) => t.databaseId !== m.databaseId && t.dateInt <= m.dateInt).sort((a, b) => a.dateInt - b.dateInt)

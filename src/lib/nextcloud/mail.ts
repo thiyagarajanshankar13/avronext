@@ -85,8 +85,8 @@ const FRIENDLY: Record<string, string> = {
   TOO_MANY_REQUESTS: 'Too many attempts. Wait a minute and try again.',
 }
 
-async function call<T>(s: Session, path: string, opts: { method?: string; body?: unknown; raw?: BodyInit; headers?: Record<string, string> } = {}): Promise<T> {
-  const res = await ncRequest(s, BASE + path, { method: opts.method, body: opts.body, raw: opts.raw, headers: { Accept: 'application/json', ...opts.headers }, app: APP })
+async function call<T>(s: Session, path: string, opts: { method?: string; body?: unknown; raw?: BodyInit; headers?: Record<string, string>; signal?: AbortSignal } = {}): Promise<T> {
+  const res = await ncRequest(s, BASE + path, { method: opts.method, body: opts.body, raw: opts.raw, headers: { Accept: 'application/json', ...opts.headers }, app: APP, signal: opts.signal })
   const type = res.headers.get('content-type') ?? ''
   if (res.status === 404 && !type.includes('json')) throw new NextcloudAppMissingError(APP, path)
   const data = type.includes('json') ? ((await res.json().catch(() => null)) as Envelope | T | null) : null
@@ -187,9 +187,15 @@ export const createMailbox = (s: Session, accountId: number, name: string) => ca
 
 export type SyncResult = { newMessages: MailSummary[]; changedMessages: MailSummary[]; vanishedMessages: number[] }
 
-export async function syncMailbox(s: Session, mailboxId: number, opts: { ids?: number[]; init?: boolean; lastMessageTimestamp?: number | null; query?: string | null } = {}) {
+/**
+ * Fetches what changed on the mail server into Nextcloud Mail's cache. While a folder's first download is
+ * still running in Nextcloud (minutes for a big mailbox), other syncs of it hang, so callers bound the wait
+ * (`waitMs`) and carry on with the cached copy; Nextcloud finishes the work by itself.
+ */
+export async function syncMailbox(s: Session, mailboxId: number, opts: { ids?: number[]; init?: boolean; lastMessageTimestamp?: number | null; query?: string | null; waitMs?: number } = {}) {
   return call<SyncResult>(s, `/mailboxes/${mailboxId}/sync`, {
     method: 'POST',
+    signal: opts.waitMs ? AbortSignal.timeout(opts.waitMs) : undefined,
     body: { ids: opts.ids ?? [], init: opts.init ?? false, lastMessageTimestamp: opts.lastMessageTimestamp ?? null, query: opts.query ?? null },
   })
 }
@@ -198,21 +204,37 @@ export const markAllRead = (s: Session, mailboxId: number) => call<unknown>(s, `
 
 // ---- Messages ----
 
-const notCached = (err: unknown) => (err as { code?: string })?.code === 'NOT_CACHED' || (err as { status?: number })?.status === 428
+/** A bounded wait (`waitMs`) ran out. */
+export const isTimeout = (err: unknown) => ['TimeoutError', 'AbortError'].includes((err as { name?: string })?.name ?? '')
 
-/** A page of messages (newest first, one per conversation). `cursor` = dateInt of the last one shown. */
+/** Nextcloud Mail hasn't downloaded this folder yet (see primeMailbox). */
+export const isNotCached = (err: unknown) => (err as { code?: string })?.code === 'NOT_CACHED' || (err as { status?: number })?.status === 428
+
+/**
+ * First download of a folder into Nextcloud Mail's cache. On a big mailbox this one request runs for
+ * minutes (headers in parts of 5000, then threading), so we wait at most `waitMs` and leave Nextcloud
+ * to finish on its own (PHP keeps going when we stop waiting). `done`: cached; `more`: a part is in, call again; `running`: still going
+ * (this call or an earlier one), poll listMessages until it stops saying "not cached".
+ */
+export async function primeMailbox(s: Session, mailboxId: number, waitMs = 10_000): Promise<'done' | 'more' | 'running'> {
+  try {
+    await syncMailbox(s, mailboxId, { init: true, waitMs })
+    return 'done'
+  } catch (err) {
+    const e = err as { status?: number }
+    if (isTimeout(err)) return 'running'
+    if (e.status === 202) return 'more' // IncompleteSyncException
+    if (e.status === 409) return 'running' // already being synced
+    throw err
+  }
+}
+
+/** A page of messages (newest first, one per conversation). `cursor` = dateInt of the last one shown. Throws (isNotCached) for a folder that isn't downloaded yet. */
 export async function listMessages(s: Session, mailboxId: number, opts: { cursor?: number | null; filter?: string | null; limit?: number } = {}): Promise<MailSummary[]> {
   const q = new URLSearchParams({ mailboxId: String(mailboxId), limit: String(opts.limit ?? 30) })
   if (opts.cursor) q.set('cursor', String(opts.cursor))
   if (opts.filter) q.set('filter', opts.filter)
-  try {
-    return await call<MailSummary[]>(s, `/messages?${q}`)
-  } catch (err) {
-    if (!notCached(err)) throw err
-    // First visit to this folder: Nextcloud Mail has to fetch it from the server first.
-    await syncMailbox(s, mailboxId, { init: true })
-    return call<MailSummary[]>(s, `/messages?${q}`)
-  }
+  return call<MailSummary[]>(s, `/messages?${q}`)
 }
 
 export const getMessage = (s: Session, id: number) => call<MailMessage>(s, `/messages/${id}/body`)

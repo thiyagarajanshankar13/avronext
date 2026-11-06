@@ -9,6 +9,7 @@ import {
   mailUnreadCount,
   markFolderRead,
   moveMessages,
+  primeFolder,
   refreshMailbox,
   removeMailbox,
   saveSignature,
@@ -98,6 +99,8 @@ export function MailApp({
   const [signature, setSignature] = useState(account?.signature ?? '')
   const [note, setNote] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  /** The open folder is being downloaded into Nextcloud Mail for the first time. */
+  const [preparing, setPreparing] = useState(false)
   const searchInput = useRef<HTMLInputElement>(null)
 
   const mailbox = mailboxes.find((b) => b.databaseId === mailboxId)
@@ -120,22 +123,52 @@ export function MailApp({
   useEffect(() => {
     if (!mailboxId) return
     let stale = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let priming = false
     setMessages(null)
     setError(null)
-    loadMessages(mailboxId, { filter: activeQuery || null }).then((r) => {
-      if (stale) return
-      if (!r.ok) return setError(r.error)
-      setMessages(r.data)
-      setHasMore(r.data.length >= PAGE)
-      // The fetch may have brought new mail: update the counts too.
-      loadMailboxes(accountId).then((b) => !stale && b.ok && setMailboxes(sortFolders(b.data)))
-      reportUnread()
-    })
+    setPreparing(false)
+    // First visit: Nextcloud Mail downloads the whole folder, which takes minutes for a big mailbox.
+    // Keep that going in the background (one request at a time, again while it says "more") and show
+    // the list as soon as Nextcloud has it.
+    const prime = async () => {
+      if (priming) return
+      priming = true
+      for (let i = 0; i < 50 && !stale; i++) {
+        const p = await primeFolder(mailboxId)
+        if (stale) break
+        if (!p.ok) {
+          setError(p.error)
+          break
+        }
+        if (p.data !== 'more') break
+      }
+      priming = false
+    }
+    const load = () =>
+      loadMessages(mailboxId, { filter: activeQuery || null }).then((r) => {
+        if (stale) return
+        if (!r.ok) return setError(r.error)
+        if (r.data === null) {
+          setPreparing(true)
+          void prime()
+          timer = setTimeout(load, 4000)
+          return
+        }
+        setPreparing(false)
+        setMessages(r.data)
+        setHasMore(r.data.length >= PAGE)
+        // The fetch may have brought new mail: update the counts too.
+        loadMailboxes(accountId).then((b) => !stale && b.ok && setMailboxes(sortFolders(b.data)))
+        reportUnread()
+      })
+    void load()
     const url = new URL(window.location.href)
     url.searchParams.set('folder', String(mailboxId))
     window.history.replaceState(window.history.state, '', url)
     return () => {
       stale = true
+      clearTimeout(timer)
     }
   }, [mailboxId, activeQuery]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -197,9 +230,10 @@ export function MailApp({
     const r = await loadMessages(mailboxId, { cursor: messages[messages.length - 1].dateInt, filter: activeQuery || null })
     setLoadingMore(false)
     if (!r.ok) return setError(r.error)
+    const page = r.data ?? []
     const known = new Set(messages.map((m) => m.databaseId))
-    setMessages([...messages, ...r.data.filter((m) => !known.has(m.databaseId))])
-    setHasMore(r.data.length >= PAGE)
+    setMessages([...messages, ...page.filter((m) => !known.has(m.databaseId))])
+    setHasMore(page.length >= PAGE)
   }
 
   const patchMessage = (id: number, flags: Partial<MailSummary['flags']>) =>
@@ -474,7 +508,14 @@ export function MailApp({
           </Menu>
         </form>
         {error && <div className="banner banner-error">{error}</div>}
-        {messages === null && !error && <div className="mail-list-empty muted">Loading…</div>}
+        {messages === null && !error && !preparing && <div className="mail-list-empty muted">Loading…</div>}
+        {messages === null && !error && preparing && (
+          <div className="mail-list-empty mail-preparing">
+            <span className="spinner" aria-hidden="true" />
+            <strong>Getting your mail ready</strong>
+            <span className="muted small">This is the first time this folder is opened, so Nextcloud is downloading it from the mail server. A big mailbox can take a few minutes; your messages appear here as soon as they’re in.</span>
+          </div>
+        )}
         {messages?.length === 0 && <div className="mail-list-empty muted">{activeQuery ? 'No messages match your search.' : 'No messages here.'}</div>}
         <ul className="mail-items">
           {messages?.map((m) => {
@@ -512,10 +553,6 @@ export function MailApp({
         {selected ? (
           <MessageView id={selected} mailboxes={mailboxes} isDraftFolder={isDrafts} onBack={() => setSelected(null)} onAction={(a) => act(selected, a)}
             onNote={setNote}
-            onGone={() => {
-              removeFromList(selected)
-              setNote('That message was moved or deleted in the meantime.')
-            }}
           />
         ) : (
           <div className="mail-reader-empty">

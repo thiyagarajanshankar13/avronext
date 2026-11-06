@@ -115,27 +115,46 @@ export async function loadMailboxes(accountId: number) {
   return run((s) => mail.listMailboxes(s, id(accountId)))
 }
 
+/** A page of messages; `null` while Nextcloud Mail is still downloading the folder for the first time (see primeFolder). */
 export async function loadMessages(mailboxId: number, opts: { cursor?: number | null; filter?: string | null } = {}) {
-  return run(async (s) => {
+  return run(async (s): Promise<mail.MailSummary[] | null> => {
     // Opening a folder: fetch what arrived on the mail server first (Nextcloud Mail lists its own copy).
-    if (!opts.cursor) await mail.syncMailbox(s, id(mailboxId)).catch(() => undefined)
-    return mail.listMessages(s, id(mailboxId), { cursor: opts.cursor ?? null, filter: toFilter(opts.filter), limit: 30 })
+    if (!opts.cursor) await mail.syncMailbox(s, id(mailboxId), { waitMs: 6000 }).catch(() => undefined)
+    try {
+      return await mail.listMessages(s, id(mailboxId), { cursor: opts.cursor ?? null, filter: toFilter(opts.filter), limit: 30 })
+    } catch (err) {
+      if (mail.isNotCached(err)) return null
+      throw err
+    }
   })
+}
+
+/** First visit to a folder: starts (or continues) Nextcloud Mail's download of it. */
+export async function primeFolder(mailboxId: number) {
+  return run((s) => mail.primeMailbox(s, id(mailboxId)))
 }
 
 /** New, changed and removed messages since the client's copy (`ids` = what it shows). */
 export async function syncFolder(mailboxId: number, ids: number[], query: string | null) {
-  return run((s) => mail.syncMailbox(s, id(mailboxId), { ids: ids.slice(0, 500).map(Number).filter(Number.isInteger), query: toFilter(query) }))
+  return run(async (s): Promise<mail.SyncResult> => {
+    try {
+      return await mail.syncMailbox(s, id(mailboxId), { ids: ids.slice(0, 500).map(Number).filter(Number.isInteger), query: toFilter(query), waitMs: 10_000 })
+    } catch (err) {
+      // Nextcloud is still busy with this folder (e.g. its first download): nothing new yet, try next time.
+      if (mail.isTimeout(err) || mail.isNotCached(err) || (err as { status?: number }).status === 409) return { newMessages: [], changedMessages: [], vanishedMessages: [] }
+      throw err
+    }
+  })
 }
 
 /** Fetches a folder from the mail server in the background (e.g. Sent, so conversations include your replies). */
 export async function refreshMailbox(mailboxId: number) {
   return run(async (s) => {
     try {
-      await mail.syncMailbox(s, id(mailboxId))
+      await mail.syncMailbox(s, id(mailboxId), { waitMs: 10_000 })
     } catch (err) {
-      if ((err as { code?: string }).code !== 'NOT_CACHED' && (err as { status?: number }).status !== 428) throw err
-      await mail.syncMailbox(s, id(mailboxId), { init: true })
+      if (mail.isNotCached(err)) await mail.primeMailbox(s, id(mailboxId))
+      else if (!mail.isTimeout(err)) throw err
     }
     return null
   })
