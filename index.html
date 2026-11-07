@@ -4,13 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AvroNext · A modern front end for your Nextcloud</title>
-    <meta name="description" content="Jira-style projects, Confluence-style spaces, OneDrive-style files and Keep-style notes on top of your own Nextcloud. No database, free and open source (AGPL-3.0)." />
+    <meta name="description" content="Jira-style projects, Confluence-style spaces, OneDrive-style files, Keep-style notes and your email on top of your own Nextcloud. No database, free and open source (AGPL-3.0)." />
     <meta name="theme-color" content="#0c66e4" />
     <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="assets/icon-192.png" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="AvroNext · A modern front end for your Nextcloud" />
-    <meta property="og:description" content="Projects, spaces, files and notes on your own Nextcloud, with an installable mobile app. No database. Free and open source." />
+    <meta property="og:description" content="Projects, spaces, files, notes and mail on your own Nextcloud, with an installable mobile app. No database. Free and open source." />
     <meta property="og:image" content="https://thiyagarajanshankar13.github.io/avronext/assets/og.jpg" />
     <meta property="og:url" content="https://thiyagarajanshankar13.github.io/avronext/" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -38,7 +38,7 @@
           <div class="hero-text">
             <p class="eyebrow">Free &amp; open source · AGPL-3.0</p>
             <h1>A modern workspace for <span class="grad">your own Nextcloud</span></h1>
-            <p class="lead">Jira-style projects, Confluence-style spaces, OneDrive-style files and Keep-style notes, plus an installable mobile app. AvroNext has <strong>no database</strong>: everything stays in your Nextcloud.</p>
+            <p class="lead">Jira-style projects, Confluence-style spaces, OneDrive-style files, Keep-style notes and your email, plus an installable mobile app. AvroNext has <strong>no database</strong>: everything stays in your Nextcloud.</p>
             <div class="cta">
               <a class="btn btn-primary" href="#start">Get started</a>
               <a class="btn btn-ghost" href="https://github.com/thiyagarajanshankar13/avronext">View on GitHub</a>
@@ -150,6 +150,23 @@
 
           <article class="feature">
             <div class="feature-text">
+              <p class="tag">Mail · on Nextcloud Mail</p>
+              <h3>Your email like Outlook</h3>
+              <ul>
+                <li>Inbox, folders, conversations, stars, search and keyboard shortcuts</li>
+                <li>Write with the same rich text editor; attach from your computer or straight from Files</li>
+                <li>Save attachments to Files in one click; drafts save as you type</li>
+                <li>Set your mail server once for everyone: people just enter their password the first time</li>
+              </ul>
+            </div>
+            <div class="feature-shots">
+              <button class="zoom" data-src="assets/screens/mail-light.jpg"><img class="shot" loading="lazy" src="assets/screens/mail-light.jpg" alt="Mail inbox with a conversation open" /></button>
+              <button class="zoom" data-src="assets/screens/mail-compose-light.jpg"><img class="shot" loading="lazy" src="assets/screens/mail-compose-light.jpg" alt="Replying to an email" /></button>
+            </div>
+          </article>
+
+          <article class="feature feature-alt">
+            <div class="feature-text">
               <p class="tag">Admin · light &amp; dark</p>
               <h3>People, permissions and your theme</h3>
               <ul>
@@ -204,6 +221,10 @@
             <button class="zoom" data-src="assets/screens/viewer-slides-light.jpg"><img loading="lazy" src="assets/screens/viewer-slides-light.jpg" alt="PowerPoint viewer" /><span>PowerPoint viewer</span></button>
             <button class="zoom" data-src="assets/screens/notes-dark.jpg"><img loading="lazy" src="assets/screens/notes-dark.jpg" alt="Notes in dark mode" /><span>Notes, dark</span></button>
             <button class="zoom" data-src="assets/screens/files-dark.jpg"><img loading="lazy" src="assets/screens/files-dark.jpg" alt="Files in dark mode" /><span>Files, dark</span></button>
+            <button class="zoom" data-src="assets/screens/mail-dark.jpg"><img loading="lazy" src="assets/screens/mail-dark.jpg" alt="Mail in dark mode" /><span>Mail, dark</span></button>
+            <button class="zoom" data-src="assets/screens/mail-compose-light.jpg"><img loading="lazy" src="assets/screens/mail-compose-light.jpg" alt="Replying to an email" /><span>Reply all</span></button>
+            <button class="zoom" data-src="assets/screens/mail-connect-light.jpg"><img loading="lazy" src="assets/screens/mail-connect-light.jpg" alt="Connect your mailbox" /><span>Connect your mailbox</span></button>
+            <button class="zoom" data-src="assets/screens/issue-new-label-light.jpg"><img loading="lazy" src="assets/screens/issue-new-label-light.jpg" alt="Creating a label from an issue" /><span>New label</span></button>
           </div>
           <div class="grid grid-phone" data-panel="phone" hidden>
             <button class="zoom" data-src="assets/screens/phone-home-light.jpg"><img loading="lazy" src="assets/screens/phone-home-light.jpg" alt="Home on a phone" /><span>Home</span></button>
@@ -212,6 +233,12 @@
             <button class="zoom" data-src="assets/screens/phone-space-light.jpg"><img loading="lazy" src="assets/screens/phone-space-light.jpg" alt="Space on a phone" /><span>Space</span></button>
             <button class="zoom" data-src="assets/screens/phone-notes-dark.jpg"><img loading="lazy" src="assets/screens/phone-notes-dark.jpg" alt="Notes on a phone, dark" /><span>Notes, dark</span></button>
             <button class="zoom" data-src="assets/screens/phone-files-add-dark.jpg"><img loading="lazy" src="assets/screens/phone-files-add-dark.jpg" alt="Add to Files on a phone, dark" /><span>Add to Files</span></button>
+            <button class="zoom" data-src="assets/screens/phone-mail-light.jpg"><img loading="lazy" src="assets/screens/phone-mail-light.jpg" alt="Mail on a phone" /><span>Mail</span></button>
+            <button class="zoom" data-src="assets/screens/phone-message-light.jpg"><img loading="lazy" src="assets/screens/phone-message-light.jpg" alt="Reading an email on a phone" /><span>Email</span></button>
+            <button class="zoom" data-src="assets/screens/phone-chips-light.jpg"><img loading="lazy" src="assets/screens/phone-chips-light.jpg" alt="Section chips on a phone" /><span>Section chips</span></button>
+            <button class="zoom" data-src="assets/screens/phone-pages-light.jpg"><img loading="lazy" src="assets/screens/phone-pages-light.jpg" alt="Space pages sheet on a phone" /><span>Pages</span></button>
+            <button class="zoom" data-src="assets/screens/phone-notes-light.jpg"><img loading="lazy" src="assets/screens/phone-notes-light.jpg" alt="Notes on a phone" /><span>Notes</span></button>
+            <button class="zoom" data-src="assets/screens/phone-board-light.jpg"><img loading="lazy" src="assets/screens/phone-board-light.jpg" alt="Board on a phone" /><span>Board</span></button>
           </div>
         </div>
       </section>
@@ -223,7 +250,7 @@
             <div class="step">
               <h3><span class="num">1</span> What you need</h3>
               <ul>
-                <li>Nextcloud <strong>28 or newer</strong> with the <strong>Deck</strong> and <strong>Collectives</strong> apps (Teams/Circles ships with Nextcloud). The <strong>Notes</strong> app is optional.</li>
+                <li>Nextcloud <strong>28 or newer</strong> with the <strong>Deck</strong> and <strong>Collectives</strong> apps (Teams/Circles ships with Nextcloud). The <strong>Notes</strong> and <strong>Mail</strong> apps are optional.</li>
                 <li><strong>Docker</strong>, or <strong>Node.js 20.9+</strong></li>
                 <li><strong>HTTPS</strong> in front of AvroNext (needed for secure sign-in cookies and to install the mobile app)</li>
               </ul>
@@ -272,6 +299,10 @@ npm start               # http://localhost:3000</code><button class="copy" aria-
                 <tr><td><code>NEXTCLOUD_PUBLIC_URL</code></td><td>no</td><td>Nextcloud's address as browsers see it, if different (e.g. an internal Docker hostname above)</td></tr>
                 <tr><td><code>MAX_UPLOAD_MB</code></td><td>no</td><td>Largest issue/page attachment per file (default 100). Files uploads are chunked and have no AvroNext limit.</td></tr>
                 <tr><td><code>COOKIE_SECURE</code></td><td>no</td><td><code>true</code> in production; set <code>false</code> only for plain-http testing away from localhost</td></tr>
+                <tr><td><code>MAIL_IMAP_HOST</code>, <code>MAIL_SMTP_HOST</code></td><td>for Mail</td><td>Your mail server. Mail appears once both are set (and the Nextcloud Mail app is installed).</td></tr>
+                <tr><td><code>MAIL_IMAP_PORT</code>, <code>MAIL_IMAP_SECURITY</code></td><td>no</td><td>Default <code>993</code> and <code>ssl</code>. Security is <code>ssl</code>, <code>tls</code> (STARTTLS) or <code>none</code>.</td></tr>
+                <tr><td><code>MAIL_SMTP_PORT</code>, <code>MAIL_SMTP_SECURITY</code></td><td>no</td><td>Default <code>465</code> and <code>ssl</code>.</td></tr>
+                <tr><td><code>MAIL_USERNAME</code></td><td>no</td><td>The username suggested on the connect screen: <code>%EMAIL%</code> (default), <code>%USERID%</code>, or e.g. <code>%USERID%@example.com</code>. People can change it.</td></tr>
               </tbody>
             </table>
           </div>
@@ -298,6 +329,7 @@ npm start               # http://localhost:3000</code><button class="copy" aria-
                 <tr><td>Space, page</td><td>Collective, Collectives page (a Markdown file)</td></tr>
                 <tr><td>Files</td><td>Your Nextcloud Files (WebDAV) and Nextcloud sharing</td></tr>
                 <tr><td>Note</td><td>A Markdown file in <code>Notes/</code>, as the Notes app stores it. Pinned = favourite, archived = <code>Notes/Archive/</code>, colours and labels in <code>Notes/.avronext-notes.json</code></td></tr>
+                <tr><td>Mail</td><td>Nextcloud Mail: one account per person, created with your mail server settings. Nextcloud keeps the password and a cache of message headers.</td></tr>
                 <tr><td>People and access</td><td>Deck sharing, Collectives teams, users and groups</td></tr>
               </tbody>
             </table>
@@ -315,6 +347,14 @@ npm start               # http://localhost:3000</code><button class="copy" aria-
           <details>
             <summary>Can I keep using Nextcloud's own apps?</summary>
             <p>Yes. AvroNext uses Deck, Collectives, Files and the Notes app's own formats, so changes in either place show up in the other.</p>
+          </details>
+          <details>
+            <summary>Where is my mail password kept?</summary>
+            <p>In Nextcloud Mail, encrypted, the same as when you add a mailbox in Nextcloud itself. You enter it once; after that Mail opens straight to your inbox on any device. AvroNext never stores it.</p>
+          </details>
+          <details>
+            <summary>Opening Mail the first time takes a while. Why?</summary>
+            <p>Nextcloud downloads each folder's message list from your mail server the first time it's opened. On a big mailbox that can take a few minutes: AvroNext shows "Getting your mail ready" and fills the list in as soon as it's there. After that it only fetches what's new.</p>
           </details>
           <details>
             <summary>Do I need Nextcloud Office to open documents?</summary>

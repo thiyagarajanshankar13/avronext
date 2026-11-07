@@ -55,9 +55,19 @@ code {
   padding: 0.1em 0.35em;
   border-radius: 4px;
 }
+kbd {
+  font: 0.85em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  padding: 0.05em 0.4em;
+  border: 1px solid #091e4224;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+}
 @media (prefers-color-scheme: dark) {
   code {
     background: #ffffff14;
+  }
+  kbd {
+    border-color: #ffffff29;
   }
 }
 .wrap {
