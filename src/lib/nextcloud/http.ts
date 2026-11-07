@@ -41,6 +41,8 @@ type RequestOptions = {
   raw?: BodyInit
   /** Name of the Nextcloud app this endpoint belongs to, for a friendly 404. */
   app?: string
+  /** Gives up waiting (Nextcloud may carry on with the work). */
+  signal?: AbortSignal
 }
 
 /** Low-level authenticated request against Nextcloud. Returns the Response. */
@@ -57,7 +59,7 @@ export async function ncRequest(session: Session, path: string, opts: RequestOpt
     headers['Content-Type'] = 'application/json'
     body = JSON.stringify(opts.body)
   }
-  const init: RequestInit & { duplex?: 'half' } = { method: opts.method ?? 'GET', headers, body, cache: 'no-store' }
+  const init: RequestInit & { duplex?: 'half' } = { method: opts.method ?? 'GET', headers, body, cache: 'no-store', signal: opts.signal }
   // Streamed request bodies (uploads passed straight through) need half-duplex.
   if (body instanceof ReadableStream) init.duplex = 'half'
   const res = await fetch(nextcloudUrl() + path, init)

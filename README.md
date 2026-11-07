@@ -23,6 +23,7 @@ What's new: [release notes](https://thiyagarajanshankar13.github.io/avronext/rel
 - **Administration** (Nextcloud admins and group admins): users (add with an emailed invite or a password, edit, groups, group-admin rights, admin rights, quota, disable, reset password, resend invite, delete) and groups (create, rename, delete). Nextcloud enforces every permission; group admins only see their groups.
 - **Files** (OneDrive-like) on top of **Nextcloud Files**: My files, Recent, Favourites, Shared with me / by me; list and tile views; drag-and-drop upload of files and whole folders (chunked, so big files work); download (zip for several items), rename, move/copy, delete; sharing with people, groups and teams or by public link (password, expiry). A read-only viewer for images, PDF, video/audio, text/Markdown, Word, Excel and PowerPoint, all in the browser (no Nextcloud Office needed).
 - **Notes** (Google Keep-like), stored as Nextcloud Notes app files so the Notes app and its phone apps see the same notes: text and checklist notes, pin, colours, labels, archive, images (paste, drop or attach), search, and sharing through Nextcloud. Notes open instantly from a browser copy and sync in the background; edits made offline are saved when the connection is back, and a note changed on two devices keeps both versions.
+- **Mail** (Outlook-like, optional) on top of **Nextcloud Mail**: folders with unread counts, a message list with search, a reading pane (HTML shown safely, remote images on request, inline images, attachments to open, download or save to Files), conversations, star / unread / move / delete, and writing with the rich-text editor: new, reply, reply all, forward (attachments included), attachments from the computer or from Files, signature and drafts that save themselves. New mail shows up within 30 s with a count in the nav. Keyboard shortcuts (c, j/k, r, a, f, s, u, #, /). People connect their mailbox with just their password: the server settings come from AvroNext's configuration.
 - **Installable mobile app (PWA)**: Install from the profile menu (or the browser's Add to Home Screen). On phones: a bottom tab bar, a + button for the current screen, bottom sheets, full-screen issues, one board column at a time, a camera button in Files, app-icon shortcuts (New note, New issue, Upload, My issues) and, on Android, sharing photos, files and links from other apps into Files, a note or an issue. A friendly offline screen when there's no connection. AvroNext must be served over HTTPS to be installable.
 - **Light / Dark / System theme**, remembered per browser.
 - **Your work**: issues assigned to you, issues due this week, recently updated pages and issues.
@@ -66,6 +67,24 @@ Docker:
 docker build -t avronext .
 docker run -p 3000:3000 -e NEXTCLOUD_URL=https://cloud.example.com -e SESSION_SECRET=... avronext
 ```
+
+## Mail
+
+Mail is off until you point AvroNext at your mail server; it then appears in the top bar for everyone. It works through Nextcloud's **Mail** app, which must be installed (and allow people to add accounts, its default): accounts, folders and messages live in Nextcloud Mail, so the Mail app in Nextcloud shows the same mailboxes.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `MAIL_IMAP_HOST` | (off) | Incoming (IMAP) server, e.g. `mail.example.com`. Mail is on when this and `MAIL_SMTP_HOST` are set |
+| `MAIL_IMAP_PORT` | `993` | IMAP port |
+| `MAIL_IMAP_SECURITY` | `ssl` on 993, else `tls` | `ssl` (implicit TLS), `tls` (STARTTLS) or `none` |
+| `MAIL_SMTP_HOST` | (off) | Outgoing (SMTP) server |
+| `MAIL_SMTP_PORT` | `465` | SMTP port |
+| `MAIL_SMTP_SECURITY` | `ssl` on 465, else `tls` | `ssl`, `tls` or `none` |
+| `MAIL_USERNAME` | `%EMAIL%` | The username suggested when connecting: `%EMAIL%`, `%USERID%` (Nextcloud user id) or e.g. `%USERID%@example.com`. People can change it |
+
+**Connecting.** The first time someone opens Mail they see *Connect your mailbox* with their email (from their Nextcloud profile) and username pre-filled; they type their mail password and press Connect. AvroNext creates the account in Nextcloud Mail with the server settings above; Nextcloud checks the login and stores the password (encrypted), exactly as when an account is added in its Mail app. AvroNext stores nothing. Sent, Drafts and Trash folders are found (or created) automatically. Mailboxes people already added in Nextcloud Mail (e.g. Gmail) show up too, with a switcher; the settings menu has Signature, Reconnect (new password), Add another mailbox and Remove (nothing is deleted on the mail server).
+
+**Nextcloud notes.** A mail server on a private address needs `'allow_local_remote_servers' => true` in Nextcloud's `config.php` (Nextcloud Mail refuses local hosts otherwise). The Mail app's API isn't an official versioned one; AvroNext is tested with Mail 5.5, and every call is in `src/lib/nextcloud/mail.ts`.
 
 ## Signing in
 

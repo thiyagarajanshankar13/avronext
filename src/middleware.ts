@@ -15,5 +15,5 @@ export function middleware(req: NextRequest) {
 export const config = {
   // Uploads skip middleware: Next buffers request bodies for middleware and
   // truncates big ones. Those routes check the session themselves.
-  matcher: ['/((?!_next/|api/attachments/|api/upload|favicon.ico|icon.svg|robots.txt|sw.js|manifest.webmanifest|offline.html|icons/).*)'],
+  matcher: ['/((?!_next/|api/attachments/|api/upload|api/mail/upload|favicon.ico|icon.svg|robots.txt|sw.js|manifest.webmanifest|offline.html|icons/).*)'],
 }

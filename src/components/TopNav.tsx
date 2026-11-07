@@ -14,6 +14,7 @@ import { Menu } from './Menu'
 import { startNavProgress } from './NavProgress'
 import { ThemeSwitch } from './ThemeSwitch'
 import { FAB_EVENT } from '@/lib/fab'
+import { mailUnreadCount } from '@/app/(app)/mail/actions'
 
 export type NavProject = { id: number; title: string; color: string }
 export type NavSpace = { id: number; name: string; emoji: string | null }
@@ -28,6 +29,10 @@ const TABS: [href: string, label: string, icon: IconName, match: (p: string) => 
   ['/files', 'Files', 'folder', (p) => p.startsWith('/files')],
   ['/notes', 'Notes', 'bulbFilled', (p) => p.startsWith('/notes')],
 ]
+const MAIL_TAB: (typeof TABS)[number] = ['/mail', 'Mail', 'mail', (p) => p.startsWith('/mail')]
+
+/** Mail's unread badge listens for this (MailApp sends it when counts change). */
+export const MAIL_UNREAD_EVENT = 'avronext:mail-unread'
 
 /** Phone top bar: where we are, and the way back up. */
 function mobileHeading(pathname: string, projects: NavProject[], spaces: NavSpace[]): { title: string; back: string | null } {
@@ -49,6 +54,8 @@ function mobileHeading(pathname: string, projects: NavProject[], spaces: NavSpac
     }
     case 'notes':
       return { title: 'Notes', back: null }
+    case 'mail':
+      return { title: 'Mail', back: null }
     case 'search':
       return { title: 'Search', back: '/' }
     case 'admin':
@@ -64,6 +71,7 @@ export function TopNav({
   user,
   nextcloudUrl,
   canAdminister,
+  mail = false,
   projects,
   spaces,
 }: {
@@ -71,6 +79,8 @@ export function TopNav({
   nextcloudUrl: string
   /** Nextcloud admin or group admin: shows "Administration". */
   canAdminister: boolean
+  /** Mail is set up on this server (MAIL_IMAP_HOST…): shows the Mail tab. */
+  mail?: boolean
   projects: NavProject[]
   spaces: NavSpace[]
 }) {
@@ -100,11 +110,30 @@ export function TopNav({
   const currentPage = Number(pathname.match(/^\/spaces\/\d+\/pages\/(\d+)/)?.[1]) || undefined
 
   const heading = mobileHeading(pathname, projects, spaces)
+
+  // Unread mail in the nav: polled every minute (and on tab focus); Mail itself reports changes at once.
+  const [unread, setUnread] = useState(0)
+  useEffect(() => {
+    if (!mail) return
+    const load = () => mailUnreadCount().then((r) => r.ok && setUnread(r.data))
+    load()
+    const t = setInterval(load, 60_000)
+    const onFocus = () => document.visibilityState === 'visible' && load()
+    const onCount = (e: Event) => setUnread((e as CustomEvent<number>).detail)
+    document.addEventListener('visibilitychange', onFocus)
+    window.addEventListener(MAIL_UNREAD_EVENT, onCount)
+    return () => {
+      clearInterval(t)
+      document.removeEventListener('visibilitychange', onFocus)
+      window.removeEventListener(MAIL_UNREAD_EVENT, onCount)
+    }
+  }, [mail])
   // What the phone's + button does here (null = no button).
   const fab: { label: string; run: () => void } | null = (() => {
     const emit = (target: string) => () => window.dispatchEvent(new CustomEvent(FAB_EVENT, { detail: target }))
     if (pathname.startsWith('/files')) return { label: 'Add files', run: emit('files') }
     if (pathname.startsWith('/notes')) return { label: 'New note', run: emit('notes') }
+    if (pathname.startsWith('/mail')) return { label: 'New message', run: emit('mail') }
     if (/^\/spaces\/\d+/.test(pathname)) return { label: 'New page', run: () => setCreating('page') }
     if (pathname === '/spaces') return { label: 'New space', run: () => setCreating('space') }
     if (pathname === '/' || pathname.startsWith('/projects')) return { label: 'New issue', run: () => setCreating('issue') }
@@ -142,6 +171,12 @@ export function TopNav({
           {tab('/spaces', 'Spaces', pathname.startsWith('/spaces'))}
           {tab('/files', 'Files', pathname.startsWith('/files'))}
           {tab('/notes', 'Notes', pathname.startsWith('/notes'))}
+          {mail && (
+            <Link prefetch={false} href="/mail" className={`topnav-link${pathname.startsWith('/mail') ? ' is-active' : ''}`}>
+              Mail
+              {unread > 0 && <span className="nav-badge" aria-label={`${unread} unread`}>{unread > 99 ? '99+' : unread}</span>}
+            </Link>
+          )}
         </nav>
         <Menu
           className="topnav-create"
@@ -252,12 +287,13 @@ export function TopNav({
         </button>
       )}
       <nav className="bottomnav" aria-label="Sections">
-        {TABS.map(([href, label, icon, match]) => {
+        {(mail ? [...TABS.slice(0, 4), MAIL_TAB, TABS[4]] : TABS).map(([href, label, icon, match]) => {
           const active = match(pathname)
           return (
             <Link key={href} prefetch={false} href={href} className={`bottomnav-tab${active ? ' is-active' : ''}`} aria-current={active ? 'page' : undefined}>
               <span className="bottomnav-pill">
                 <Icon name={icon} size={22} />
+                {href === '/mail' && unread > 0 && <span className="nav-badge nav-badge-dot" aria-label={`${unread} unread`} />}
               </span>
               <span className="bottomnav-label">{label}</span>
             </Link>

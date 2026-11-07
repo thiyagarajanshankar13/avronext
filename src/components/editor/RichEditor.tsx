@@ -24,10 +24,13 @@ export type RichEditorHandle = {
 
 type Props = {
   initialMarkdown: string
+  /** Start from HTML instead (e.g. a quoted email); the editor still produces Markdown. */
+  initialHtml?: string
   /** 'page' = full toolbar; 'compact' = issue descriptions (no headings 1, tables or panels in the toolbar). */
   variant?: 'page' | 'compact'
   placeholder?: string
-  autoFocus?: boolean
+  /** Cursor at the start once loaded; `always` also when another field has focus (e.g. a dialog focused its first input). */
+  autoFocus?: boolean | 'always'
   /** Display URL for an image's stored src (relative attachment paths → files proxy). */
   resolveSrc?: (src: string) => string
   /** Enables attaching files (button, paste, drop): stores the file and returns its Markdown href. */
@@ -48,7 +51,7 @@ const CALLOUT_LABEL: Record<CalloutType, string> = { info: 'Info', success: 'Suc
  * Nextcloud's callouts can store; see scripts/markdown-roundtrip.ts.
  */
 export const RichEditor = forwardRef<RichEditorHandle, Props>(function RichEditor(
-  { initialMarkdown, variant = 'page', placeholder, autoFocus, resolveSrc, upload, onDirtyChange, onUploadingChange, onError, onSubmit },
+  { initialMarkdown, initialHtml, variant = 'page', placeholder, autoFocus, resolveSrc, upload, onDirtyChange, onUploadingChange, onError, onSubmit },
   ref,
 ) {
   const [slash, setSlash] = useState<SlashState>(null)
@@ -168,8 +171,8 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(function RichEdito
         },
       }),
     ],
-    content: initialMarkdown,
-    contentType: 'markdown',
+    content: initialHtml ?? initialMarkdown,
+    contentType: initialHtml !== undefined ? 'html' : 'markdown',
     editorProps: {
       attributes: { class: `prose rich-content rich-${variant}`, spellcheck: 'true' },
       handleKeyDown: (_view, event) => {
@@ -206,7 +209,7 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(function RichEdito
       baseline.current = markdownOf(ed)
       // Put the cursor at the start, synchronously and only if nothing has focus yet: a deferred
       // focus could land after the user's first click and move their cursor to the top.
-      if (autoFocus && (!document.activeElement || document.activeElement === document.body)) {
+      if (autoFocus === 'always' || (autoFocus && (!document.activeElement || document.activeElement === document.body))) {
         ed.view.focus()
         ed.commands.setTextSelection(1)
       }

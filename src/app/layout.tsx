@@ -11,7 +11,15 @@ export const metadata: Metadata = {
   applicationName: 'AvroNext',
   // iPhone/iPad "Add to Home Screen": full screen, with our icon and name.
   appleWebApp: { capable: true, title: 'AvroNext', statusBarStyle: 'default' },
-  icons: { apple: '/icons/apple-touch-icon.png' },
+  // Listing icons here replaces Next's automatic app/icon.svg link, so the favicon is listed too
+  // (SVG for most browsers, PNG for Safari, which doesn't show SVG favicons).
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icons/icon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
+    apple: '/icons/apple-touch-icon.png',
+  },
   formatDetection: { telephone: false },
 }
 

@@ -18,20 +18,24 @@ export function Modal({
   className?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
+  // The latest onClose, so the effect below runs once: re-running it on every render (callers often
+  // pass a new function each time) moved the focus back to the first field while people typed.
+  const closeRef = useRef(onClose)
+  closeRef.current = onClose
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') closeRef.current()
     }
     document.addEventListener('keydown', onKey)
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    const first = ref.current?.querySelector<HTMLElement>('[autofocus], input, textarea, select, button')
-    first?.focus()
+    // Keep a field that focused itself (React autoFocus, an editor); otherwise the first one.
+    if (!ref.current?.contains(document.activeElement)) ref.current?.querySelector<HTMLElement>('[autofocus], input, textarea, select, button')?.focus()
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prev
     }
-  }, [onClose])
+  }, [])
 
   return (
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
